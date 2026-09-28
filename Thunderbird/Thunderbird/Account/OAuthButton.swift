@@ -14,7 +14,7 @@ struct OAuthButton: View {
         _ emailAddress: String = "",
         token: Binding<Token?>,
         refreshToken: Binding<Token?>,
-        authConfig: Binding<OAuth2.Request?>,
+        authConfig: Binding<OAuth2.Configuration?>,
         error: Binding<Error?>
     ) {
         self.emailAddress = emailAddress
@@ -25,7 +25,7 @@ struct OAuthButton: View {
     }
 
     @Environment(\.webAuthenticationSession) private var webAuthenticationSession: WebAuthenticationSession
-    @Binding private var authConfig: OAuth2.Request?
+    @Binding private var authConfig: OAuth2.Configuration?
     @Binding private var refreshToken: Token?
     @Binding private var token: Token?
     @Binding private var error: Error?
@@ -57,7 +57,7 @@ struct OAuthButton: View {
     private func configure() async {
         do {
             error = nil
-            authConfig = try await OAuth2.request(emailAddress)
+            authConfig = try await OAuth2.configuration(emailAddress)
         } catch {
             self.error = error
         }
@@ -103,7 +103,7 @@ struct OAuthButton: View {
     @Previewable @State var token: Token?
     @Previewable @State var refreshToken: Token?
     @Previewable @State var error: Error?
-    @Previewable @State var authConfig: OAuth2.Request?
+    @Previewable @State var authConfig: OAuth2.Configuration?
 
     OAuthButton(
         "example@thunderbird.net",

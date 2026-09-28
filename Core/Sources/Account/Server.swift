@@ -52,10 +52,6 @@ public struct Server: Codable, Equatable, Hashable, Identifiable, Sendable {
         self.id = id
     }
 
-    var user: String {  // Append unique suffix for keychain: "user@example.com IMAP:E621E1F8"
-        "\(username) \(serverProtocol):\(id.uuidString(1))"
-    }
-
     // MARK: Identifiable
     public let id: UUID
 }

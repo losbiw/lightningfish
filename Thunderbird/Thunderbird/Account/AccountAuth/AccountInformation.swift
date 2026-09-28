@@ -22,13 +22,14 @@ struct AccountInformation: View {
     @State private var error: Error?
     @State private var loginServer: Server = Server(.imap)
     @State private var loginAuth: Authorization = .none
-    @State private var loginAuthConfig: OAuth2.Request?
+    @State private var loginAuthConfig: OAuth2.Configuration?
 
     private func refreshAccount() {
         account = emailAddress.isEmailAddress ? Account(emailAddress, provider: config?.emailProvider) : nil
         guard let account = account else { return }
         guard let incomingServer = account.incomingServer else { return }
         loginServer = incomingServer
+        loginAuthConfig = account.authConfig
         loginAuth = account.authorization
     }
 
@@ -102,7 +103,7 @@ struct AccountInformation: View {
             }
         }
         .onChange(of: emailAddress, initial: true) {
-            refreshAccount()
+            config = nil
         }
         .onChange(of: config, initial: true) {
             refreshAccount()

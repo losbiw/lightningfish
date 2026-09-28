@@ -89,7 +89,8 @@ struct EmailListView: View {
                             .buttonStyle(.bordered)
                             .foregroundStyle(.black)
                         Spacer()
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }.accessibilityHidden(showDrawer)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     VStack {
                         List(emails, id: \.id, selection: $selections) { email in
@@ -110,6 +111,7 @@ struct EmailListView: View {
                             #endif
                             .listRowSeparator(.hidden)
                             .navigationLinkIndicatorVisibility(.hidden)
+                            .accessibilityHidden(showDrawer)
                         }
 
                         ProgressView()
@@ -142,21 +144,23 @@ struct EmailListView: View {
                         .background(Color(white: 0.9))
                         .foregroundColor(.muted)
                         .clipShape(Circle())
-                }
-                .background(.clear)
-                .padding()
-                .navigationDestination(for: String.self) { destination in
-                    if destination == "compose" {
-                        ComposeView()
+                }.background(.clear)
+                    .accessibilityHidden(showDrawer)
+                    .padding()
+                    .navigationDestination(for: String.self) { destination in
+                        if destination == "compose" {
+                            ComposeView()
+                        }
                     }
                 }
 
                 DrawerView(showDrawer: $showDrawer)
+                    .accessibilityHidden(!showDrawer)
                     .environment(session)
             }
             .navigationTitle("inbox_header")
             #if os(iOS)
-            .navigationBarBackButtonHidden(editMode.isEditing)
+            .navigationBarBackButtonHidden(editMode.isEditing || showDrawer)
             #endif
             .toolbar {
                 ToolbarItem(placement: .leading) {
@@ -165,8 +169,8 @@ struct EmailListView: View {
                             showDrawer = true
                         }
                     } label: {
-                        Label("account", systemImage: "line.3.horizontal")
-                    }
+                        Label("Account", systemImage: "line.3.horizontal").labelStyle(.iconOnly)
+                    }.accessibilityHidden(showDrawer)
                 }
                 #if os(iOS)
                 ToolbarItem(placement: .cancellationAction) {
@@ -200,7 +204,7 @@ struct EmailListView: View {
                             })
                     } label: {
                         Label("sort_button", systemImage: "line.3.horizontal.decrease", )
-                    }
+                    }.accessibilityHidden(showDrawer)
                 }
                 ToolbarItem(placement: .trailing) {
                     Menu {
@@ -230,12 +234,12 @@ struct EmailListView: View {
                             })
                     } label: {
                         Label("options_button", systemImage: "ellipsis")
-                    }
+                    }.accessibilityHidden(showDrawer)
                 }
             }
-        }
-        .onChange(of: session.selectedMailbox, initial: true) {
-            loadEmails()
+            .onChange(of: session.selectedMailbox, initial: true) {
+                loadEmails()
+            }
         }
     }
 }

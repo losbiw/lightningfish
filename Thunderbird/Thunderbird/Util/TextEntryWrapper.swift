@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+import Bolt
 import SwiftUI
 
 struct TextEntryWrapper: View {
@@ -11,7 +12,7 @@ struct TextEntryWrapper: View {
     ///  - suggestionText: The placeholder value for the entry box to give context to the entry field
     ///  - entryText: Binding string to pass data outside wrapper
     init(
-        _ header: LocalizedStringResource = "",
+        _ header: LocalizedStringKey = "",
         _ suggestion: String = "",
         _ entryText: Binding<String> = .constant(""),
     ) {
@@ -20,21 +21,15 @@ struct TextEntryWrapper: View {
         _entryText = entryText
     }
 
-    private var headerText: LocalizedStringResource
+    private var headerText: LocalizedStringKey
     private var suggestionText: String
     @Binding private var entryText: String
 
     // MARK: View
     var body: some View {
-        Text(headerText)
-            .listRowSeparator(.visible, edges: .bottom)
         TextField(suggestionText, text: $entryText)
-            .textFieldStyle(.plain)
-            .listRowSeparator(.hidden)
-            #if os(iOS)
-        .autocapitalization(.none)
-            #endif
-            .autocorrectionDisabled()
+            .formInput(headerText)
+            .autoFormattingDisabled()
             .focusable()
     }
 }

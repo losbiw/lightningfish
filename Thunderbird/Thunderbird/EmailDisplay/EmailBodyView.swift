@@ -4,6 +4,7 @@
 
 import InfomaniakRichHTMLEditor
 import SwiftUI
+import Core
 
 struct EmailBodyView: View {
     @Environment(\.openURL) private var openURL: OpenURLAction
@@ -11,6 +12,7 @@ struct EmailBodyView: View {
     @State private var selection = ""
     @State private var textAttributes = TextAttributes()
     @FocusState private var keyboardShown: Bool
+    @State var email: Email?
     let editable: Bool
 
     var focusBinding: Binding<Bool> {
@@ -29,8 +31,9 @@ struct EmailBodyView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
-                ComposeHeaderView()
-
+                if (editable) {
+                    ComposeHeaderView(email: email)
+                }
                 RichHTMLEditor(html: $html, selection: $selection, editable: editable, textAttributes: textAttributes)
                     .handleLinkOpening(perform: { URL in
                         Task { @MainActor in
@@ -50,6 +53,9 @@ struct EmailBodyView: View {
                     .frame(height: keyboardShown ? 44 : 0)
                     .animation(.easeIn(duration: 0.25), value: keyboardShown)
             }
+        }
+        .onAppear {
+            html = email?.body?.html() ?? ""
         }
     }
 }

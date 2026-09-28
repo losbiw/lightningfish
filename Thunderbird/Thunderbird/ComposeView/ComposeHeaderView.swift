@@ -4,8 +4,11 @@
 
 import Account
 import SwiftUI
+import Core
 
 struct ComposeHeaderView: View {
+    @State var email: Email?
+
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @State private var subject: String = ""
     @State private var toRecipients: [String] = []
@@ -15,6 +18,17 @@ struct ComposeHeaderView: View {
     @State private var selectedSender: UUID = UUID()
     @State private var showCCBCC: Bool = false
     @State private var showReplyTo: Bool = false
+
+    func populateFromEmail(_ email: Email?) {
+        guard let email else { return }
+
+        subject = email.subject ?? subject
+
+        toRecipients = email.toStringArray
+        replyToRecipients = email.replyToStringArray
+        ccRecipients = email.ccStringArray
+        bccRecipients = email.bccStringArray
+    }
 
     var body: some View {
         VStack {
@@ -76,6 +90,9 @@ struct ComposeHeaderView: View {
                 .background(.gray, in: RoundedRectangle(cornerRadius: 24))
         }
         .padding()
+        .onAppear {
+            populateFromEmail(email)
+        }
     }
 }
 

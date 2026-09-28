@@ -10,11 +10,12 @@ extension URLCredentialStorage {
     }
 
     func set(authorization: Authorization, persistence: URLCredential.Persistence = .permanent, space: URLProtectionSpace = .account) {
-        if !authorization.password.isEmpty {
-            set(URLCredential(authorization: authorization, persistence: persistence), for: space)
-        } else if let credential: URLCredential = credentials(for: space)?[authorization.user] {
-            remove(credential, for: space)  // Remove existing credential on empty password
-        }
+        set(URLCredential(authorization: authorization, persistence: persistence), for: space)
+    }
+
+    func deleteAuthorization(for user: String, space: URLProtectionSpace = .account) {
+        guard let credential: URLCredential = credentials(for: space)?[user] else { return }
+        remove(credential, for: space)
     }
 
     func deleteAuthorizations(space: URLProtectionSpace = .account) {

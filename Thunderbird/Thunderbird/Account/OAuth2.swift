@@ -5,23 +5,24 @@
 import Autoconfiguration
 import Foundation
 
-/// Thunderbird iOS specific OAuth2 Request objects for expected email providers
-/// > Note: TODO: Replace current Android ids and secrets with iOS specific ones as they are received
-extension OAuth2.Request: @retroactive CaseIterable {
+/// Thunderbird-specific OAuth2 configuration objects for expected email providers
+extension OAuth2.Configuration: @retroactive CaseIterable {
 
     // MARK: AOL
     static var aol: Self {
         try! Self(
             authURI: "https://api.login.aol.com/oauth2/request_auth",
             tokenURI: "https://api.login.aol.com/oauth2/get_token",
-            redirectURI: "\(Bundle.main.schemes.first!)://oauth2redirect",
+            redirectURI: "\(Bundle.main.schemes.first!)://oauth2",
             responseType: "code",
             scope: [
                 "mail-w"
             ],
-            clientID: "dj0yJmk9MVJGcHpSejNUcTU3JmQ9WVdrOWMwMHhjSFZqTkhRbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PWNk",
+            clientID: "dj0yJmk9aVN2UzU1S3N6UWlGJmQ9WVdrOVRXTnlla056U2swbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTBi",
             hosts: [
-                "aol.com"
+                "imap.mail.aol.com",
+                "smtp.mail.aol.com",
+                "yahoodns.net"
             ]
         )
     }
@@ -69,7 +70,7 @@ extension OAuth2.Request: @retroactive CaseIterable {
         try! Self(
             authURI: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
             tokenURI: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-            redirectURI: "msauth://\(Bundle.main.schemes.first!)/eaXDuh6T3KFWjcJhsoaObT9OayU%3D",
+            redirectURI: "msauth.\(Bundle.main.schemes.first!)://auth",
             responseType: "code",
             scope: [
                 "profile",
@@ -79,7 +80,7 @@ extension OAuth2.Request: @retroactive CaseIterable {
                 "https://outlook.office.com/SMTP.Send",
                 "offline_access"
             ],
-            clientID: "e6f8716e-299d-4ed9-bbf3-453f192f44e5",
+            clientID: "22c6c0b6-8265-4475-9cb8-b8f225837d93",
             hosts: [
                 "office365.com",
                 "outlook.com"
@@ -113,14 +114,16 @@ extension OAuth2.Request: @retroactive CaseIterable {
         try! Self(
             authURI: "https://api.login.yahoo.com/oauth2/request_auth",
             tokenURI: "https://api.login.yahoo.com/oauth2/get_token",
-            redirectURI: "\(Bundle.main.schemes.first!)://oauth2redirect",
+            redirectURI: "\(Bundle.main.schemes.first!)://oauth2",
             responseType: "code",
             scope: [
                 "mail-w"
             ],
-            clientID: "dj0yJmk9bXRhTkZod2xmY3JrJmQ9WVdrOVUyUTRXRGQ0Tlc4bWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTkx",
+            clientID: "dj0yJmk9emZqcDA4Q2w3QW9GJmQ9WVdrOVpYaG9Vak5KYjA4bWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTA4",
             hosts: [
-                "yahoo.com"
+                "imap.mail.yahoo.com",
+                "smtp.mail.yahoo.com",
+                "yahoodns.net"
             ]
         )
     }
@@ -139,10 +142,10 @@ extension OAuth2.Request: @retroactive CaseIterable {
 }
 
 extension OAuth2 {
-    static func request(_ emailAddress: String) async throws -> Self.Request {
+    static func configuration(_ emailAddress: String) async throws -> Self.Configuration {
         let records: [MXRecord] = try await DNSResolver.queryMX(emailAddress)
         for record in records {
-            for request in Request.allCases {
+            for request in Configuration.allCases {
                 guard request.matches(record.host) else { continue }
                 return request
             }

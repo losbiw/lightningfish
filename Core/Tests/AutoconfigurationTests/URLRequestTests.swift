@@ -8,7 +8,7 @@ import Testing
 
 struct URLRequestTests {
     @Test func token() throws {
-        let request: OAuth2.Request = try OAuth2.Request(
+        let request: OAuth2.Configuration = try OAuth2.Configuration(
             authURI: "https://example.com/authorize",
             tokenURI: "https://example.com/token",
             redirectURI: "com.example:/oauth2redirect",
@@ -35,7 +35,7 @@ struct URLRequestTests {
     }
 
     @Test func refreshToken() async throws {
-        let request: OAuth2.Request = try OAuth2.Request(
+        let request: OAuth2.Configuration = try OAuth2.Configuration(
             authURI: "https://example.com/authorize",
             tokenURI: "https://example.com/token",
             redirectURI: "com.example:/oauth2redirect",

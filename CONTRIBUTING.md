@@ -9,6 +9,8 @@
 ## Overview
 Welcome!
 
+At the moment we are not accepting community contributions as we prepare the app for initial release. Check out the information below to understand contribution guidelines once we open up to the community.
+
 We're writing a totally new version of Thunderbird for iOS, and we're building it as a new [Swift](https://developer.apple.com/swift) and [SwiftUI](https://developer.apple.com/swiftui) app.
 
 Mostly from scratch, because we looked everywhere, but didn't find many open source projects or libraries that suited our needs -- either on Apple platforms or on adjacent, compatible platforms. So, we started from Swift [NIO](https://opensource.apple.com/projects/swiftnio) and [Foundation](https://developer.apple.com/documentation/foundation), and we wrote our own suite of core libraries, with protocol implementations for [IMAP](https://imap.org/imap-protocol), SMTP and [JMAP.](https://jmap.io) We included account autoconfiguration, persistence and secure keychain storage for passwords and tokens. We even wrote our own [MIME](https://datatracker.ietf.org/doc/html/rfc6838) encoding and decoding.

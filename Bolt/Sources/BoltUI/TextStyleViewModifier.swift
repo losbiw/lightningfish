@@ -5,6 +5,8 @@
 import SwiftUI
 
 extension View {
+
+    /// Select appropriate text style for any `View`.
     public func textStyle(_ style: Font.Style, isDynamic: Bool = true) -> some View {
         modifier(TextStyleViewModifier(style, isDynamic: isDynamic))
     }
@@ -40,7 +42,6 @@ struct TextStyleViewModifier: ViewModifier {
             }
         }
     }
-    .containerRelativeFrame(.horizontal)
 }
 
 private struct TextStylePreview: View {

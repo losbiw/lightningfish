@@ -29,51 +29,50 @@ public enum Authorization: CustomStringConvertible, Equatable {
     /// Encoded `URLCredential` password value (for keychain storage)
     public var password: String {
         switch self {
-        case .basic(let user, let password): return "\(user.components(separatedBy: " ")[0]):\(password)".data(using: .utf8)!.base64EncodedString()
-        case .oauth(_, let token, _):
-            let passwordString = "\(token.description):\(token.tokenExpiration?.timeIntervalSince1970, default: "0"):\(refreshToken.description)"
-            return passwordString.data(using: .utf8)!.base64EncodedString()
-
-        case .none: return ""
+        case .basic(let user, let password):
+            "\(user):\(password)".data(using: .utf8)!.base64EncodedString()
+        case .oauth(_, let token, let refreshToken):
+            "\(token):\(token.tokenExpiration?.timeIntervalSince1970, default: "0"):\(refreshToken)"
+                .data(using: .utf8)!
+                .base64EncodedString()
+        case .none:
+            ""
         }
     }
 
     public var isExpired: Bool {
         switch self {
-        case .basic(_, _): return false
-        case .oauth(_, let token, _): return token.isExpired
-        case .none: return true
+        case .basic(_, _): false
+        case .oauth(_, let token, _): token.isExpired
+        case .none: true
         }
     }
-    public var refreshToken: String {
+
+    public var refreshToken: String? {
         switch self {
-        case .basic: return ""
-        case .oauth(_, _, let refreshToken): return refreshToken.value
-        case .none: return ""
+        case .oauth(_, _, let refreshToken): refreshToken.value
+        case .basic, .none: nil
         }
     }
 
     /// Derive appropriate authorization case from naked `URLCredential` user/password strings.
     init(user: String, password: String?) {
         let password: String = password ?? ""
-        let data: Data? = Data(base64Encoded: password)
-        guard let data else {
-            self = .none
-            return
-        }
-        if let components: [String] = String(data: data, encoding: .utf8)?.components(separatedBy: ":"),
-            components.count == 2, components.first == user.components(separatedBy: " ")[0]
+        if !user.isEmpty,
+            let data: Data = Data(base64Encoded: password),
+            let components: [String] = String(data: data, encoding: .utf8)?.components(separatedBy: ":")
         {
-            self = .basic(user: user, password: components.last!)
-        } else {
-            if let components: [String] = String(data: data, encoding: .utf8)?.components(separatedBy: ":"),
-                components.count == 3
-            {
-                let expDate = Date(timeIntervalSince1970: TimeInterval(components[1]) ?? 0)
-                self = .oauth(user: user, token: .bearer(components.first!, expDate), refresh: .refresh(components.last!))
-            } else {
+            switch components.count {
+            case 3:
+                let expDate: Date = Date(timeIntervalSince1970: TimeInterval(components[1]) ?? 0)
+                self = .oauth(user: user, token: .bearer(components[0], expDate), refresh: .refresh(components[2]))
+            case 2:
+                self = .basic(user: user, password: components[1])
+            default:
                 self = .none
             }
+        } else {
+            self = .none
         }
     }
 

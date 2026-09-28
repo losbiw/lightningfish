@@ -34,13 +34,6 @@
       }
     },
     {
-      "target" : {
-        "containerPath" : "container:..\/Bolt",
-        "identifier" : "EditorTests",
-        "name" : "EditorTests"
-      }
-    },
-    {
       "skippedTests" : {
         "suites" : [
           {

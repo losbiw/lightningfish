@@ -16,11 +16,13 @@ struct AuthorizationView: View {
         error: Binding<Error?>,
         for username: String,
         authenticationType: AuthenticationType = .oAuth2,
-        authConfig: Binding<OAuth2.Request?> = .constant(nil)
+        authConfig: Binding<OAuth2.Configuration?> = .constant(nil)
     ) {
+        _authorization = authorization
+        _authConfig = authConfig
+        _error = error
         self.username = username
         self.authenticationType = authenticationType
-        _authorization = authorization
         switch authorization.wrappedValue {
         case .basic(_, let password):
             self.password = password
@@ -30,12 +32,10 @@ struct AuthorizationView: View {
         case .none:
             break
         }
-        _error = error
-        _authConfig = authConfig
     }
 
     @Binding private var authorization: Authorization
-    @Binding private var authConfig: OAuth2.Request?
+    @Binding private var authConfig: OAuth2.Configuration?
     @Binding private var error: Error?
     @State private var password: String = ""
     @State private var token: Token?
@@ -67,7 +67,7 @@ struct AuthorizationView: View {
 #Preview("Authorization View") {
     @Previewable @State var authorization: Authorization = .none
     @Previewable @State var error: Error?
-    @Previewable @State var auth: OAuth2.Request? = .google
+    @Previewable @State var auth: OAuth2.Configuration? = .google
 
     AuthorizationView($authorization, error: $error, for: "example@thunderbird.net", authConfig: $auth)
         .padding()

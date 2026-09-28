@@ -11,7 +11,7 @@ struct NumEntryWrapper: View {
     ///  - suggestionText: The placeholder value for the entry box to give context to the entry field
     ///  - entryText: Binding Int to pass data outside wrapper
     init(
-        _ header: LocalizedStringResource,
+        _ header: LocalizedStringKey,
         _ suggestion: String,
         _ entryText: Binding<Int?>,
     ) {
@@ -20,22 +20,18 @@ struct NumEntryWrapper: View {
         _entryText = entryText
     }
 
-    private var headerText: LocalizedStringResource
+    private var headerText: LocalizedStringKey
     private var suggestionText: String
     @Binding private var entryText: Int?
 
     // MARK: View
     var body: some View {
-        Text(headerText)
-            .listRowSeparator(.visible, edges: .bottom)
         TextField(suggestionText, value: $entryText, formatter: NumberFormatter())
+            .formInput(headerText)
+            .autocorrectionDisabled()
             #if os(iOS)
         .keyboardType(.numberPad)
-        .listRowSeparator(.hidden)
-        .textFieldStyle(.plain)
-        .autocapitalization(.none)
             #endif
-            .autocorrectionDisabled()
             .focusable()
     }
 }

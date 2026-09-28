@@ -28,37 +28,33 @@ public struct Account: Codable, Equatable, Hashable, Identifiable, FetchableReco
     public var identities: [EmailAddress]
     public var servers: [Server]
     public var avatarColor: String
-    public var authConfig: OAuth2.Request?
+    public var authConfig: OAuth2.Configuration?
 
     public var incomingServer: Server? { server(.jmap) ?? server(.imap) ?? nil }
     public var outgoingServer: Server? { server(.jmap) ?? server(.smtp) ?? nil }
+    public var emailAddress: EmailAddress? { identities.first }
 
-    /// Store server credentials locally in the [Apple keychain.](https://developer.apple.com/documentation/security/storing-keys-in-the-keychain)
+    /// Store account credentials locally in the [Apple keychain.](https://developer.apple.com/documentation/security/storing-keys-in-the-keychain)
     public var authorization: Authorization {
-        set {  // Swap in keychain-specific user name
-            let newAuth: Authorization = Authorization(
-                user: incomingServer!.user,
-                password: newValue.password
-            )
-            URLCredentialStorage.shared.set(authorization: newAuth, persistence: .permanent)
+        set {
+            guard let user: String = emailAddress?.value, !user.isEmpty else { return }
+            URLCredentialStorage.shared.deleteAuthorization(for: user)
+            guard !newValue.password.isEmpty else { return }
+            URLCredentialStorage.shared.set(authorization: Authorization(user: user, password: newValue.password), persistence: .permanent)
         }
         get {
-            guard let newAuth: Authorization = URLCredentialStorage.shared.authorization(for: incomingServer!.user) else {
+            guard let user: String = emailAddress?.value, !user.isEmpty,
+                let authorization: Authorization = URLCredentialStorage.shared.authorization(for: user)
+            else {
                 return .none
             }
-            return Authorization(
-                user: incomingServer!.username,
-                password: newAuth.password
-            )  // Swap out keychain-specific user name
+            return Authorization(user: user, password: authorization.password)
         }
     }
 
     public func deleteAuthorization() {
-        let deleteAuth: Authorization = Authorization(
-            user: incomingServer!.user,
-            password: ""
-        )
-        URLCredentialStorage.shared.set(authorization: deleteAuth)
+        guard let user: String = emailAddress?.value, !user.isEmpty else { return }
+        URLCredentialStorage.shared.deleteAuthorization(for: user)
     }
 
     public var emailProtocol: EmailProtocol {

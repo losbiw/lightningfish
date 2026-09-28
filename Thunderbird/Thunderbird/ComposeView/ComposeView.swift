@@ -3,13 +3,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import SwiftUI
+import Core
 
 struct ComposeView: View {
-    @State private var demoHtml: String = "<h1>Hello World</h1>"
-    @State private var rawText = NSAttributedString(string: "")
+    @State var email: Email?
 
     var body: some View {
-        EmailBodyView(editable: true)
+        EmailBodyView(email: email, editable: true)
             .toolbar {
                 ToolbarItem(placement: .trailing) {
                     Button(action: {

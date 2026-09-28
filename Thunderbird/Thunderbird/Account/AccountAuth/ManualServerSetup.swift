@@ -35,7 +35,7 @@ struct ManualServerSetup: View {
     @State private var manualConfig: Bool
     @State private var account: Account
     @State private var error: Error?
-    @State private var authConfig: OAuth2.Request?
+    @State private var authConfig: OAuth2.Configuration?
 
     // MARK: View
     var body: some View {

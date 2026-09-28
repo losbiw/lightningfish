@@ -72,23 +72,20 @@ public final class AccountManager {
     public func checkAndRenewExpirations() async throws {
         var updatedAccounts: [Account] = []
         for account in allAccounts {
-            var serverAuth = account.authorization
-            if account.incomingServer?.authenticationType == .oAuth2 {
-                if serverAuth.isExpired {
-                    do {
-                        serverAuth = try await renewExpiredToken(
-                            authConfig: account.authConfig!,
-                            refreshToken: serverAuth.refreshToken,
-                            user: serverAuth.user
-                        )!
-
-                        var account = account
-                        account.authorization = serverAuth
-                        updatedAccounts.append(account)
-                    } catch {
-                        throw URLError(.unknown)
-                    }
-                }
+            let serverAuth: Authorization = account.authorization
+            guard account.incomingServer?.authenticationType == .oAuth2, serverAuth.isExpired else {
+                continue
+            }
+            do {
+                var account = account
+                account.authorization = try await renewExpiredToken(
+                    authConfig: account.authConfig!,
+                    refreshToken: serverAuth.refreshToken!,
+                    user: serverAuth.user
+                )
+                updatedAccounts.append(account)
+            } catch {
+                self.error = .authorization(error)
             }
         }
 
@@ -97,24 +94,30 @@ public final class AccountManager {
         }
     }
 
-    private func renewExpiredToken(authConfig: OAuth2.Request, refreshToken: String, user: String) async throws -> Authorization? {
-        let tokenRequest = try URLRequest.refreshToken(
-            authConfig,
-            refreshToken: refreshToken
-        )
+    private func renewExpiredToken(authConfig: OAuth2.Configuration, refreshToken: String, user: String, retry attempts: Int = 2) async throws -> Authorization {
         do {
-            for _ in 0..<3 {
-                let (data, _) = try await URLSession.shared.data(for: tokenRequest)
-                let response: RefreshTokenResponse = try JSONDecoder().decode(RefreshTokenResponse.self, from: data)
-                let token = Token.bearer(
-                    response.accessToken,
-                    Date(timeIntervalSinceNow: TimeInterval(response.expiresIn))
-                )
-                return .oauth(user: user, token: token, refresh: .refresh(refreshToken))
-            }
+            let tokenRequest: URLRequest = try .refreshToken(
+                authConfig,
+                refreshToken: refreshToken
+            )
+            let data: Data = try await URLSession.shared.data(for: tokenRequest).0
+            let response: RefreshTokenResponse = try JSONDecoder().decode(RefreshTokenResponse.self, from: data)
+            let token: Token = .bearer(
+                response.accessToken,
+                Date(timeIntervalSinceNow: TimeInterval(response.expiresIn))
+            )
+            return .oauth(user: user, token: token, refresh: .refresh(refreshToken))
         } catch {
-            throw URLError(.unknown)
+            guard attempts > 0 else {
+                throw error  // Retry attempts exhausted, exit
+            }
+            // Retry request, decrementing remaining attempts
+            return try await renewExpiredToken(
+                authConfig: authConfig,
+                refreshToken: refreshToken,
+                user: user,
+                retry: attempts - 1
+            )
         }
-        return nil
     }
 }

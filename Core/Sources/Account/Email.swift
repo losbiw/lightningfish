@@ -10,20 +10,20 @@ import MIME
 import GRDB
 
 /// Common `Email` model represents and losslessly converts to and from both ``IMAP.Message`` and ``JMAP.Email``
-public struct Email: CustomStringConvertible, Identifiable, Sendable, Hashable {
-    public let from: [MailAddress]
-    public let sender: [MailAddress]
-    public let replyTo: [MailAddress]
-    public let to: [MailAddress]
-    public let bcc: [MailAddress]
-    public let cc: [MailAddress]
+public struct Email: CustomStringConvertible, Identifiable, Sendable {
+    public var from: [EmailAddressProtocol]
+    public var sender: [EmailAddressProtocol]
+    public var replyTo: [EmailAddressProtocol]
+    public var to: [EmailAddressProtocol]
+    public var bcc: [EmailAddressProtocol]
+    public var cc: [EmailAddressProtocol]
     public let received: Date?  // IMAP internal message date
     public let sent: Date?  // IMAP envelope date
     public let messageID: [String]
     public let threadID: [String]
     public let inReplyTo: [String]
-    public let subject: String?
-    public let body: EmailBody?
+    public var subject: String?
+    public var body: EmailBody?
     public let blobID: String?
     public let uid: UID?
     public let preview: String?
@@ -171,6 +171,39 @@ extension Email {
     }
 }
 
+// MARK: - EmailAddressProtocol array conversion methods
+extension Email {
+    // A convenience function that converts an array of `EmailAddressProtocol` to an array of strings.
+    public func addressesStringArray(_ a: [EmailAddressProtocol]) -> [String] {
+        a.flatMap { $0.addresses.map { $0.value } }
+    }
+
+    // A convenience function that combines all of the addresses into a single comma separated string.
+    public func commaSeparatedAddresses(_ a: [EmailAddressProtocol]) -> String {
+        a.flatMap { $0.addresses.map { $0.value } }.joined(separator: ", ")
+    }
+
+    public var toStringArray: [String] { addressesStringArray(to) }
+    public var replyToStringArray: [String] { addressesStringArray(replyTo) }
+    public var ccStringArray: [String] { addressesStringArray(cc) }
+    public var bccStringArray: [String] { addressesStringArray(bcc) }
+}
+
+// MARK: - Convenience methods for reassigning senders/receivers
+extension Email {
+    public func asReply(all: Bool) -> Email {
+        var newEmail = self
+        newEmail.to = from
+
+        if !all {
+            newEmail.cc = []
+            newEmail.bcc = []
+        }
+
+        return newEmail
+    }
+}
+
 extension IMAP.Message {
 
     // Use `gmailMessageID` as ID string, if present
@@ -293,10 +326,10 @@ private extension Flag {
         if rawFlag.starts(with: "\\") {
             return String(rawFlag.dropFirst(2))
         }
-        
+
         return rawFlag
     }
-    
+
     init(flag: UnifiedFlag) {
         switch flag {
         case .seen:
@@ -320,10 +353,10 @@ private extension JMAP.Email.Keyword {
         if rawFlag.starts(with: "$") {
             return String(rawFlag.dropFirst())
         }
-        
+
         return rawFlag
     }
-    
+
     init(flag: UnifiedFlag) {
         switch flag {
         case .seen:
@@ -347,18 +380,18 @@ private extension UnifiedFlag {
         if rawFlag.starts(with: "\\") {
             return String(rawFlag.dropFirst(2))
         }
-        
+
         return rawFlag
     }
-    
+
     func to(rawFlag: String) -> String {
         if rawFlag.starts(with: "\\") {
             return String(rawFlag.dropFirst(2))
         }
-        
+
         return rawFlag
     }
-    
+
     init(imapFlag: Flag) {
         switch imapFlag {
         case .seen:

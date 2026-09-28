@@ -19,12 +19,10 @@ let package: Package = Package(
             name: "BoltUI",
             targets: [
                 "BoltUI"
-            ]),
-        .library(
-            name: "Editor",
-            targets: [
-                "Editor"
             ])
+    ],
+    dependencies: [
+        .package(url: "https://github.com/toddheasley/bolt-design-system", branch: "swift-package")
     ],
     targets: [
         .target(
@@ -35,17 +33,11 @@ let package: Package = Package(
         .target(
             name: "BoltUI",
             dependencies: [
-                "Editor"
+                .product(name: "BoltDesignSystem", package: "bolt-design-system")
             ]),
         .testTarget(
             name: "BoltUITests",
             dependencies: [
                 "BoltUI"
-            ]),
-        .target(name: "Editor"),
-        .testTarget(
-            name: "EditorTests",
-            dependencies: [
-                "Editor"
             ])
     ])

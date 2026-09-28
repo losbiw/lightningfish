@@ -13,10 +13,12 @@ public final class MailboxManager {
     public private(set) var emails: [String: [Email]] = [:]
     // TODO: probably throw from here instead of saving the error
     public var error: AccountError?
+    public let folderManager: FolderManager
 
     public init(account: Account, store: LocalStore) {
         self.account = account
         self.store = store
+        self.folderManager = FolderManager(account: account)
     }
 
     public func mailbox(_ name: String) -> Mailbox? {
@@ -26,7 +28,7 @@ public final class MailboxManager {
     public func mailbox(for id: String) -> Mailbox? {
         mailboxes.first(where: { $0.id == id })
     }
-    
+
     public func emailWithBody(for uid: UID, in mailbox: Mailbox) async -> Email? {
         do {
             if let cached = try store.loadEmailBody(for: uid, in: mailbox.name), cached.body != nil {
@@ -37,7 +39,7 @@ public final class MailboxManager {
             case .imap:
                 let client: IMAPClient = try await account.imapClient
                 try await client.select(mailbox: IMAP.Mailbox.Name(mailbox.name))
-                let message: Message = try await client.fetch(uid: uid) // fetches the entire body by default
+                let message: Message = try await client.fetch(uid: uid)  // fetches the entire body by default
                 let email = Email(message)
                 try store.cacheEmails(in: mailbox.name, emails: [email])
                 return email
@@ -49,7 +51,7 @@ public final class MailboxManager {
             return nil
         }
     }
-    
+
     private func mergeEmails(_ cached: [Email], _ new: [Email]) -> [Email] {
         return Array(Set(cached + new)).sorted().reversed()
     }
@@ -71,10 +73,10 @@ public final class MailboxManager {
                     return emails.map { Email($0) }
                 }
             }()
-            
+
             let mergedEmails = mergeEmails(cache, serverEmails)
             try store.cacheEmails(in: mailbox.name, emails: mergedEmails)
-            
+
             return mergedEmails
         } catch {
             self.error = AccountError(error)
@@ -175,6 +177,8 @@ public final class MailboxManager {
                 let mailboxes: [JMAP.Mailbox] = try await client.mailboxes()
                 self.mailboxes = mailboxes.map { Mailbox($0) }
             }
+
+            await folderManager.refreshFolders(mailboxes: mailboxes)
         } catch {
             self.error = AccountError(error)
         }

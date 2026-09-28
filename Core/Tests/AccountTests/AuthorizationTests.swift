@@ -23,7 +23,7 @@ struct AuthorizationTests {
     }
 
     @Test func value() {
-        #expect(Authorization.basic(user: "user@example.com IMAP:E621E1F8", password: "P@$sW0rd!").value == "Basic dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=")
+        #expect(Authorization.basic(user: "user@example.com", password: "P@$sW0rd!").value == "Basic dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=")
         #expect(
             Authorization
                 .oauth(
@@ -36,11 +36,11 @@ struct AuthorizationTests {
     }
 
     @Test func password() {
-        #expect(Authorization.basic(user: "user@example.com IMAP:E621E1F8", password: "P@$sW0rd!").password == "dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=")
+        #expect(Authorization.basic(user: "user@example.com", password: "P@$sW0rd!").password == "dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=")
         #expect(
             Authorization
                 .oauth(
-                    user: "user@example.com IMAP:E621E1F8",
+                    user: "user@example.com",
                     token:
                         .bearer("fmu1-1e911257e86b1f194daa-0-a89faae5c11f", testExpirDate),
                     refresh: .refresh("fakeRefreshToken")
@@ -50,11 +50,11 @@ struct AuthorizationTests {
     }
 
     @Test func userInit() {
-        #expect(Authorization(user: "user@example.com IMAP:E621E1F8", password: "dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=") == .basic(user: "user@example.com IMAP:E621E1F8", password: "P@$sW0rd!"))
+        #expect(Authorization(user: "user@example.com", password: "dXNlckBleGFtcGxlLmNvbTpQQCRzVzByZCE=") == .basic(user: "user@example.com", password: "P@$sW0rd!"))
         #expect(
-            Authorization(user: "user@example.com IMAP:E621E1F8", password: "Zm11MS0xZTkxMTI1N2U4NmIxZjE5NGRhYS0wLWE4OWZhYWU1YzExZjowLjA6ZmFrZVJlZnJlc2hUb2tlbg==")
+            Authorization(user: "user@example.com", password: "Zm11MS0xZTkxMTI1N2U4NmIxZjE5NGRhYS0wLWE4OWZhYWU1YzExZjowLjA6ZmFrZVJlZnJlc2hUb2tlbg==")
                 == .oauth(
-                    user: "user@example.com IMAP:E621E1F8",
+                    user: "user@example.com",
                     token: .bearer(
                         "fmu1-1e911257e86b1f194daa-0-a89faae5c11f",
                         testExpirDate

@@ -10,27 +10,23 @@ public enum Token: CustomStringConvertible, Equatable {
 
     var value: String {
         switch self {
-        case .bearer(let token, _): token
-        case .refresh(let token): token
+        case .bearer(let token, _), .refresh(let token): token
         }
     }
 
     var isExpired: Bool {
         switch self {
-        case .bearer(_, let expiration): return Date() > expiration
-        case .refresh(_): return false
+        case .bearer(_, let expiration): Date() > expiration
+        case .refresh(_): false
         }
     }
 
     var tokenExpiration: Date? {
         switch self {
-        case .bearer(_, let expiration): return expiration
-        case .refresh(_): return nil
+        case .bearer(_, let expiration): expiration
+        case .refresh(_): nil
         }
     }
-
-    // MARK: CustomStringConvertible
-    public var description: String { value }
 
     public init(value: String, expiration: Date) {
         self = .bearer(value, expiration)
@@ -39,4 +35,7 @@ public enum Token: CustomStringConvertible, Equatable {
     public init(value: String) {
         self = .refresh(value)
     }
+
+    // MARK: CustomStringConvertible
+    public var description: String { value }
 }

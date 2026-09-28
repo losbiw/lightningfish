@@ -2,25 +2,39 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
+@testable import BoltUI
 import SwiftUI
 import Testing
-@testable import BoltUI
 
 struct ColorTests {
-    @Test func hexInit() {
-        #expect(Color(hex: 0xFF3300, opacity: 0.5) == Color(red: 1.0, green: 0.2, blue: 0.0, opacity: 0.5))
-    }
-
     @Test func isDynamic() {
-        #expect(!Color(.black, nil).isDynamic)
-        #expect(!Color(.black, .black).isDynamic)
-        #expect(Color(.black, .white).isDynamic)
+        #expect(
+            SemanticColor.allCases.compactMap {
+                $0.id == "semantic.warning.default" ? Color($0) : nil
+            }.first?.isDynamic == true)
+        #expect(
+            FoundationColor.allCases.compactMap {
+                $0.id == "foundation.ink.700" ? Color($0) : nil
+            }.first?.isDynamic == false)
     }
 
     @Test func resolveForColorScheme() {
-        #expect(Color(.black, .white).resolve(for: .light).linearRed == 0.0)
-        #expect(Color(.black, .white).resolve(for: .dark).linearRed == 1.0)
-        #expect(Color(.black, nil).resolve(for: .light).linearRed == 0.0)
-        #expect(Color(.black, nil).resolve(for: .dark).linearRed == 0.0)
+        #expect(
+            SemanticColor.allCases.compactMap {
+                $0.id == "semantic.warning.default" ? Color($0) : nil
+            }.first?.resolve(for: .light).linearRed == 0.9559735)
+        #expect(
+            SemanticColor.allCases.compactMap {
+                $0.id == "semantic.warning.default" ? Color($0) : nil
+            }.first?.resolve(for: .dark).linearRed == 0.9911022)
+
+        #expect(
+            FoundationColor.allCases.compactMap {
+                $0.id == "foundation.ink.700" ? Color($0) : nil
+            }.first?.resolve(for: .light).linearRed == 0.15592647)
+        #expect(
+            FoundationColor.allCases.compactMap {
+                $0.id == "foundation.ink.700" ? Color($0) : nil
+            }.first?.resolve(for: .dark).linearRed == 0.15592647)
     }
 }

@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 public enum AccountError: CustomStringConvertible, Error, Equatable {
+    case authorization(Error)
     case autoconfig(Error)
     case GRDB(Error)
     case imap(IMAPError)
@@ -32,6 +33,7 @@ public enum AccountError: CustomStringConvertible, Error, Equatable {
     // MARK: CustomStringConvertible
     public var description: String {
         switch self {
+        case .authorization(let error): "Authorization: \(error)"
         case .autoconfig(let error): "Autoconfiguration: \(error)"
         case .GRDB(let error): "GRDB: \(error)"
         case .imap(let error): "IMAP: \(error)"

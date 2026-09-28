@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import Account
+import BoltUI
 import SwiftUI
 
 struct EmailAccountTypeSelection: View {
@@ -30,7 +31,7 @@ struct EmailAccountTypeSelection: View {
                     selectedIMAP = false
                 }
             )
-            .toggleStyle(FullToggleStyle())
+            .fullToggleStyle()
             .listRowSeparator(.hidden)
             Toggle(isOn: $selectedIMAP) {
                 VStack(alignment: .leading) {
@@ -43,7 +44,7 @@ struct EmailAccountTypeSelection: View {
                     selectedJMAP = false
                 }
             )
-            .toggleStyle(FullToggleStyle())
+            .fullToggleStyle()
             .listRowSeparator(.hidden)
             VStack(alignment: HorizontalAlignment.leading) {
                 Text("account_setup_tips").bold()
@@ -75,42 +76,6 @@ struct EmailAccountTypeSelection: View {
                 .tint(.blue)
                 .padding()
                 .buttonStyle(.borderedProminent)
-        }
-    }
-}
-
-struct FullToggleStyle: ToggleStyle {
-    var systemImage: String = "checkmark"
-
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            configuration.label
-                .padding()
-            Spacer()
-            Circle()
-                .stroke(
-                    configuration.isOn ? .blue : .gray,
-                    style: StrokeStyle(
-                        lineWidth: 2
-                    )
-                )
-                .fill(configuration.isOn ? .blue : .white)
-                .padding(3)
-                .frame(width: 50, height: 32)
-                .overlay {
-                    Image(systemName: systemImage)
-                        .foregroundColor(.buttonFillOff)
-                }
-        }
-        .onTapGesture {
-            withAnimation(.spring()) {
-                configuration.isOn.toggle()
-            }
-        }
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(configuration.isOn ? .buttonFillOn : .buttonFillOff)
-                .stroke(configuration.isOn ? .blue : .gray, lineWidth: 1)
         }
     }
 }

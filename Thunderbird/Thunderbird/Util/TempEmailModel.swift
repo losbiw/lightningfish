@@ -5,6 +5,7 @@
 import EmailAddress
 import Foundation
 import SwiftData
+import Core
 
 /// Prior to connecting the UI/UX with actual email storage it was necessary to prototype what form the data woud take
 /// in order to test displays and develop what would be needed from the database. As the backend and UI expectations
@@ -329,4 +330,23 @@ class TempEmail: Identifiable {
             pinned: false
         )
     ]
+}
+
+extension TempEmail {
+    public func asEmail() -> Email {
+        let email = Email(
+            from: from,
+            sender: sender,
+            replyTo: reply,
+            to: to,
+            bcc: bcc,
+            cc: cc,
+            received: Date(),
+            sent: dateSent,
+            subject: headerText,
+            body: EmailBody(html: bodyText)
+        )
+
+        return email
+    }
 }

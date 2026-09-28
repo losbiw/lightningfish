@@ -114,19 +114,17 @@ struct ReadEmailView: View {
                         }
                     }
                     ToolbarItem(placement: .bottom) {
-                        Button(action: {
-                            AlertManager.shared.showAlert = true
-                            AlertManager.shared.alertTitle = "Reply"
-                        }) {
+                        NavigationLink {
+                            ComposeView(email: email.asEmail().asReply(all: false))
+                        } label: {
                             Image(systemName: "arrowshape.turn.up.left")
                                 .foregroundStyle(.foreground)
                         }
                     }
                     ToolbarItem(placement: .bottom) {
-                        Button(action: {
-                            AlertManager.shared.showAlert = true
-                            AlertManager.shared.alertTitle = "Reply All"
-                        }) {
+                        NavigationLink {
+                            ComposeView(email: email.asEmail().asReply(all: true))
+                        } label: {
                             Image(systemName: "arrowshape.turn.up.left.2")
                                 .foregroundStyle(.foreground)
                         }
@@ -141,10 +139,9 @@ struct ReadEmailView: View {
                         }
                     }
                     ToolbarItem(placement: .bottom) {
-                        Button(action: {
-                            AlertManager.shared.showAlert = true
-                            AlertManager.shared.alertTitle = "Forward"
-                        }) {
+                        NavigationLink {
+                            ComposeView(email: email.asEmail())
+                        } label: {
                             Image(systemName: "arrowshape.turn.up.right")
                                 .foregroundStyle(.foreground)
                         }
@@ -235,7 +232,9 @@ struct SenderView: View {
         replyTo = email.replyTo
         recipients = email.cc
         toText = email.to
-        date = email.sent!
+        date = email.dateSent
+        replyTo = email.reply
+        fullEmail = email
     }
 
     private var from: [MailAddress]
@@ -244,6 +243,7 @@ struct SenderView: View {
     private var recipients: [MailAddress]
     private var toText: [MailAddress]
     private var date: Date
+    private var fullEmail: TempEmail
     @State private var showSenderRecipientInfo = false
     @State private var showEmailOptions = false
 
@@ -309,11 +309,11 @@ struct SenderView: View {
                         action: {
 
                         })
-                    Button(
-                        "edit_as_new_button",
-                        action: {
-
-                        })
+                    NavigationLink {
+                        ComposeView(email: fullEmail.asEmail())
+                    } label: {
+                        Text("edit_as_new_button")
+                    }
 
                 } label: {
                     Label("options_button", systemImage: "ellipsis")

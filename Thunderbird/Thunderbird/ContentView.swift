@@ -13,31 +13,21 @@ struct ContentView: View {
 
     // MARK: View
     var body: some View {
-        VStack {
-            if accountManager.allAccounts.count > 0 {
-                EmailListView()
-                    .environment(session)
-            } else {
-                NavigationStack {
-                    WelcomeScreen($isSetupShown)
-                }
+        if accountManager.allAccounts.isEmpty {
+            WelcomeScreen($isSetupShown)
                 .sheet(isPresented: $isSetupShown) {
                     ManualAccount()
-                        .environment(accountManager)
+                        .presentationDragIndicator(.visible)
                 }
-                .presentationDragIndicator(.visible)
+        } else {
+            NavigationStack {
+                EmailListView()
             }
-        }
-        .onChange(of: accountManager.allAccounts, initial: true) {
-            if (isSetupShown) {
+            .task {
                 isSetupShown = false
+                await accountManager.checkAndRenewExpirations()
             }
-        }.task {
-            do {
-                try await accountManager.checkAndRenewExpirations()
-            } catch {
-                print("OAuth Expiration refresh error: \(error)")
-            }
+            .error()
         }
     }
 }

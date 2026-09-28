@@ -65,6 +65,7 @@ public enum Flag: String {
         var url: URL
 
         switch distribution {
+        // TODO: replace these with our own
         case .debug:
             url = URL(string: "https://thunderbird.github.io/thunderbird-ios/feature_flag_config_debug.json")!
         case .appstore:

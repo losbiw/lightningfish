@@ -14,7 +14,7 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Thunderbird.xcodeproj",
+        "containerPath" : "container:rainfrog.xcodeproj",
         "identifier" : "1521D8232D9C4D6300C4DFDF",
         "name" : "ThunderbirdTests"
       }

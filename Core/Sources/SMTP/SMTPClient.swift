@@ -16,7 +16,7 @@ public struct SMTPClient {
 
     public init(
         _ server: Server,
-        logger: Logger? = Logger(subsystem: "net.thunderbird", category: "SMTP")
+        logger: Logger? = Logger(subsystem: "net.rainfrog", category: "SMTP")
     ) {
         group = NIOTSEventLoopGroup(loopCount: 1, defaultQoS: .utility)
         self.server = server

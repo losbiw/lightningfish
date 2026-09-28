@@ -185,7 +185,7 @@ public class JMAPClient {
 
     required public init(
         _ server: Server,
-        logger: Logger? = Logger(subsystem: "net.thunderbird", category: "JMAP")
+        logger: Logger? = Logger(subsystem: "net.rainfrog", category: "JMAP")
     ) {
         self.server = server
         self.logger = logger

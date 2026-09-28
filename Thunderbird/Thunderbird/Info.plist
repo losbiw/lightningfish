@@ -8,11 +8,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>net.thunderbird.ios</string>
+			<string>net.rainfrog.ios</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>net.thunderbird.ios</string>
-				<string>msauth.net.thunderbird.ios</string>
+				<string>net.rainfrog.ios</string>
+				<string>msauth.net.rainfrog.ios</string>
 			</array>
 		</dict>
 	</array>

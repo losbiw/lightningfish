@@ -19,7 +19,7 @@ public struct LocalStore {
     public init() throws {
         var defaultDBURL = try FileManager.default
             .url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            .appendingPathComponent("maily.sqlite")
+            .appendingPathComponent("rainfrog.sqlite")
             .path
 
         try self.init(dbPath: defaultDBURL)
@@ -194,7 +194,7 @@ private struct LocalStoreMigrator {
 
     public init() {
         migrator.registerMigration(
-            "Initialize Maily DB",
+            "Initialize Rainfrog DB",
             migrate: { db in
                 try db.create(table: "session") { t in
                     t.autoIncrementedPrimaryKey("id")

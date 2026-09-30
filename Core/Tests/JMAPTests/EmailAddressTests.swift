@@ -10,22 +10,27 @@ import Testing
 struct EmailAddressTests {
 
     @Test func decoderInit() throws {
-        let emailAddresses = try JSONDecoder().decode([MailAddress].self, from: data)
+        let emailAddresses: [MailAddress] = try JSONDecoder()
+            .decode([AddressListElement].self, from: data)
+            .map(\.mailAddress)
+
         #expect(emailAddresses.count == 5)
-        #expect(emailAddresses[0] == .group(label: "Named Group", members: [
-            .address(EmailAddress("name@example.com", label: "Named Example")),
-            .address(EmailAddress("noname@example.com"))
+        #expect(emailAddresses[0] == .group(label: "Named Group", addresses: [
+            EmailAddress("name@example.com", label: "Named Example"),
+            EmailAddress("noname@example.com")
         ]))
         #expect(emailAddresses[1] == .address(EmailAddress("emptyname@example.com")))
         #expect(emailAddresses[2] == .address(EmailAddress("nullname@example.com")))
-        #expect(emailAddresses[3] == .group(label: nil, members: [
-            .address(EmailAddress("noname@example.com"))
+        #expect(emailAddresses[3] == .group(label: nil, addresses: [
+            EmailAddress("noname@example.com")
         ]))
         #expect(emailAddresses[4] == .address(EmailAddress("name@example.com", label: "Named Example")))
+    }
 
-        // Test backward compatibility with previous encoding as string
+    @Test func decoderInitFromString() throws {
+        // Addresses stored as plain strings by an older version still decode.
         let string: Data = "\"Named Example <name@example.com>\"".data(using: .utf8)!
-        let emailAddress = try JSONDecoder().decode(MailAddress.self, from: string)
+        let emailAddress: MailAddress = try JSONDecoder().decode(AddressListElement.self, from: string).mailAddress
         #expect(emailAddress == .address(EmailAddress("name@example.com", label: "Named Example")))
     }
 }

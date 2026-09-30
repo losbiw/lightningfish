@@ -13,8 +13,15 @@ extension [EmailAddressListElement] {
 extension EmailAddressListElement {
     var address: MailAddress {
         switch self {
-        case .singleAddress(let address): .address(EmailAddress(stringLiteral: "\(address)"))
-        case .group(let group): .group(label: "\(group)", members: group.children.addresses)
+        case .singleAddress(let address):
+            return .address(EmailAddress(stringLiteral: "\(address)"))
+        case .group(let group):
+            // `EmailAddressGroup.description` decodes the group name, which is empty when unnamed.
+            let label: String = "\(group)"
+            return .group(
+                label: label.isEmpty ? nil : label,
+                addresses: group.children.addresses.flatMap(\.addresses)
+            )
         }
     }
 }

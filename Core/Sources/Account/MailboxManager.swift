@@ -45,8 +45,26 @@ public final class MailboxManager {
         }
     }
 
+    /// Merges cached and freshly fetched messages, one entry per message `id`.
     private func mergeEmails(_ cached: [Email], _ new: [Email]) -> [Email] {
-        return Array(Set(cached + new)).sorted().reversed()
+        var sorted: [String: Email] = [:]
+
+        for email in cached {
+            sorted[email.id] = email
+        }
+        for var email in new {
+            // The server copy is the freshest one, but don't drop a cached body for an envelope-only fetch.
+            if let cachedBody = sorted[email.id]?.body, email.body == nil {
+                email.body = cachedBody
+            }
+            sorted[email.id] = email
+        }
+
+        // Newest first, with the ID as a tie breaker so the order is stable.
+        // distant past used as a temporal boundary if received date is missing
+        return sorted.values.sorted {
+            ($0.received ?? .distantPast, $0.id) > ($1.received ?? .distantPast, $1.id)
+        }
     }
 
     public func emails(in mailbox: Mailbox, cursor: UID?) async throws -> [Email] {

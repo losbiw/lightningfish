@@ -11,12 +11,12 @@ import GRDB
 
 /// Common `Email` model represents and losslessly converts to and from both ``IMAP.Message`` and ``JMAP.Email``
 public struct Email: CustomStringConvertible, Identifiable, Sendable {
-    public var from: [EmailAddressProtocol]
-    public var sender: [EmailAddressProtocol]
-    public var replyTo: [EmailAddressProtocol]
-    public var to: [EmailAddressProtocol]
-    public var bcc: [EmailAddressProtocol]
-    public var cc: [EmailAddressProtocol]
+    public var from: [MailAddress]
+    public var sender: [MailAddress]
+    public var replyTo: [MailAddress]
+    public var to: [MailAddress]
+    public var bcc: [MailAddress]
+    public var cc: [MailAddress]
     public let received: Date?  // IMAP internal message date
     public let sent: Date?  // IMAP envelope date
     public let messageID: [String]
@@ -171,15 +171,15 @@ extension Email {
     }
 }
 
-// MARK: - EmailAddressProtocol array conversion methods
+// MARK: - MailAddress array conversion methods
 extension Email {
-    // A convenience function that converts an array of `EmailAddressProtocol` to an array of strings.
-    public func addressesStringArray(_ a: [EmailAddressProtocol]) -> [String] {
+    // A convenience function that converts an array of `MailAddress` to an array of strings.
+    public func addressesStringArray(_ a: [MailAddress]) -> [String] {
         a.flatMap { $0.addresses.map { $0.value } }
     }
 
     // A convenience function that combines all of the addresses into a single comma separated string.
-    public func commaSeparatedAddresses(_ a: [EmailAddressProtocol]) -> String {
+    public func commaSeparatedAddresses(_ a: [MailAddress]) -> String {
         a.flatMap { $0.addresses.map { $0.value } }.joined(separator: ", ")
     }
 

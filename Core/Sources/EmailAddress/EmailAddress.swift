@@ -4,18 +4,21 @@
 
 import Foundation
 
-/// A mailbox address or an RFC address group.
-public indirect enum MailAddress: Sendable, Hashable, Codable, Identifiable {
+/// A mailbox address, or a named RFC 5322 / JMAP address group.
+///
+/// Groups don't nest: RFC 5322 group members are mailboxes, and JMAP groups are homogenous address
+/// lists, so a group holds plain ``EmailAddress`` values rather than more groups.
+public enum MailAddress: Hashable, Sendable, Codable {
     case address(EmailAddress)
-    case group(label: String?, members: [MailAddress])
+    case group(label: String?, addresses: [EmailAddress])
 
-    /// Individual mailbox addresses contained by this value, recursively.
+    /// Every mailbox address in this value, ignoring grouping.
     public var addresses: [EmailAddress] {
         switch self {
         case .address(let address):
             [address]
-        case .group(_, let members):
-            members.flatMap(\.addresses)
+        case .group(_, let addresses):
+            addresses
         }
     }
 
@@ -24,17 +27,8 @@ public indirect enum MailAddress: Sendable, Hashable, Codable, Identifiable {
         switch self {
         case .address(let address):
             address.label ?? address.value
-        case .group(let label, let members):
-            label ?? members.first?.displayName ?? ""
-        }
-    }
-
-    public var id: String {
-        switch self {
-        case .address(let address):
-            "address:\(address.id)"
-        case .group(let label, let members):
-            "group:\(label ?? ""):\(members.map(\.id).joined(separator: ","))"
+        case .group(let label, let addresses):
+            label ?? addresses.first.map { $0.label ?? $0.value } ?? ""
         }
     }
 }

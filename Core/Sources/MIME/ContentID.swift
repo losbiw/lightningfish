@@ -9,7 +9,7 @@ public typealias MessageID = ContentID
 /// Optionally structured Content-ID, used primarily for associating related MIME parts
 /// Suitable for use as IMAP Message-ID, also. Generates new IDs [as recommended](https://www.jwz.org/doc/mid.html): `<1762463150.A51D5B17@example.com>`
 /// Described in [RFC 2822](https://www.rfc-editor.org/info/rfc2822/#section-3.6.4)
-public struct ContentID: CustomStringConvertible, ExpressibleByStringLiteral, Hashable, Identifiable, Sendable {
+public struct ContentID: Codable, CustomStringConvertible, ExpressibleByStringLiteral, Hashable, Identifiable, Sendable {
 
     /// Make a new ID in the [recommended format.](https://www.jwz.org/doc/mid.html)
     public init(_ host: String = "", date: Date = Date(), uuid: UUID = UUID()) {

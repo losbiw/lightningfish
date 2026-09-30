@@ -7,7 +7,7 @@ import JMAP
 import MIME
 
 /// Common email body interface decoded from either `IMAP.Message` or `JMAP.Email`, encodable to `SMTP.Email`.
-public struct EmailBody: CustomStringConvertible, Sendable {
+public struct EmailBody: Codable, CustomStringConvertible, Sendable {
 
     /// Format HTML body value with media attachments inlined as base64 data.
     public enum HTMLFormat: String, CustomStringConvertible {

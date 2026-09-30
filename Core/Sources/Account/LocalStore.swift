@@ -94,11 +94,11 @@ extension LocalStore {
     public func cacheEmails(in mailbox: String, emails: [Email]) throws {
         try dbQueue.write { db in
             for email in emails {
-                var emailRec = EmailRecord(email, mailbox: mailbox)
+                let emailRec = EmailRecord(email, mailbox: mailbox)
                 try emailRec.save(db)
 
                 if let body = email.body {
-                    var bodyRec = EmailBodyRecord(body: body, emailId: email.id, mailbox: mailbox)
+                    let bodyRec = EmailBodyRecord(body: body, emailId: email.id, mailbox: mailbox)
                     try bodyRec.save(db)
                 }
             }
@@ -110,16 +110,23 @@ extension LocalStore {
         try dbQueue.read { db in
             let record =
                 try EmailRecord
-                .including(optional: EmailRecord.bodyAssociation)
                 .filter(Column("mailbox") == mailbox && Column("uid") == uid.rawValue)
                 .fetchOne(db)
 
-            return record?.toEmail(body: record?.body?.body)
+            guard let record else { return nil }
+
+            let body =
+                try EmailBodyRecord
+                .filter(Column("mailbox") == mailbox && Column("emailId") == record.id)
+                .fetchOne(db)?
+                .body
+
+            return record.toEmail(body: body)
         }
     }
 }
 
-public struct EmailRecord: Codable, Equatable, Hashable, Identifiable, FetchableRecord, PersistableRecord {
+public struct EmailRecord: Codable, Identifiable, FetchableRecord, PersistableRecord {
     public let mailbox: String
     public let from: [MailAddress]
     public let sender: [MailAddress]
@@ -134,13 +141,10 @@ public struct EmailRecord: Codable, Equatable, Hashable, Identifiable, Fetchable
     public let inReplyTo: [String]
     public let subject: String?
     public let blobID: String?
-    public let uid: UID?
+    public let uid: UInt32?
     public let preview: String?
     public let flags: Set<UnifiedFlag>?
     public let id: String
-
-    var body: EmailBodyRecord?
-    static let bodyAssociation = hasOne(EmailBodyRecord.self)
 
     public init(_ email: Email, mailbox: String) {
         self.from = email.from
@@ -156,14 +160,14 @@ public struct EmailRecord: Codable, Equatable, Hashable, Identifiable, Fetchable
         self.inReplyTo = email.inReplyTo
         self.subject = email.subject
         self.blobID = email.blobID
-        self.uid = email.uid
+        self.uid = email.uid?.rawValue
         self.preview = email.preview
         self.flags = email.flags
         self.id = email.id
         self.mailbox = mailbox
     }
 
-    public func toEmail(body: Body? = nil) -> Email {
+    public func toEmail(body: EmailBody? = nil) -> Email {
         return Email(self, body: body)
     }
 }
@@ -171,11 +175,9 @@ public struct EmailRecord: Codable, Equatable, Hashable, Identifiable, Fetchable
 public struct EmailBodyRecord: Codable, FetchableRecord, PersistableRecord {
     let mailbox: String
     let emailId: String
-    let body: Body
+    let body: EmailBody
 
-    static let email = belongsTo(EmailRecord.self)
-
-    public init(body: Body, emailId: String, mailbox: String) {
+    public init(body: EmailBody, emailId: String, mailbox: String) {
         self.body = body
         self.emailId = emailId
         self.mailbox = mailbox
@@ -186,46 +188,66 @@ private struct LocalStoreMigrator {
     private var migrator = DatabaseMigrator()
 
     public init() {
+        // Tables mirror the `Codable` records one column per stored property, so GRDB can save and
+        // fetch them as-is. Column types are left to SQLite: JSON-encoded values go in as text.
         migrator.registerMigration(
-            "Initialize Rainfrog DB",
+            "Create account table",
             migrate: { db in
-                try db.create(table: "session") { t in
-                    t.autoIncrementedPrimaryKey("id")
+                try db.create(table: "account") { t in
+                    t.column("id").notNull()
+                    t.column("name")
+                    t.column("deletePolicy")
+                    t.column("identities")
+                    t.column("servers")
+                    t.column("avatarColor")
+                    t.column("authConfig")
+                    t.primaryKey(["id"])
                 }
             })
 
         migrator.registerMigration(
-            "Add email cache",
+            "Create preferences table",
             migrate: { db in
-                try db.create(table: "emails") { t in
-                    t.column("mailbox", .text).notNull()
-                    t.column("emailID", .text).notNull()
-                    t.column("uid", .integer)
-                    t.column("from", .blob).notNull()
-                    t.column("sender", .blob).notNull()
-                    t.column("replyTo", .blob).notNull()
-                    t.column("to", .blob).notNull()
-                    t.column("bcc", .blob).notNull()
-                    t.column("cc", .blob).notNull()
-                    t.column("received", .datetime)
-                    t.column("sent", .datetime)
-                    t.column("messageID", .blob).notNull()
-                    t.column("threadID", .blob).notNull()
-                    t.column("inReplyTo", .blob).notNull()
-                    t.column("subject", .text)
-                    t.column("blobID", .text)
-                    t.column("preview", .text)
-                    t.column("flags", .blob).notNull()
-                    t.primaryKey(["mailbox", "emailID"])
+                try db.create(table: "userPreferences") { t in
+                    t.column("id").notNull()
+                    t.column("selectedAccountId")
+                    t.column("selectedMailboxByAccount")
+                    t.primaryKey(["id"])
                 }
-                try db.create(index: "emails_by_mailbox_uid", on: "emails", columns: ["mailbox", "uid"])
+            })
 
-                try db.create(table: "emailBodies") { t in
-                    t.column("mailbox", .text).notNull()
-                    t.column("emailID", .text).notNull()
-                    t.column("body", .blob).notNull()
-                    t.primaryKey(["mailbox", "emailID"])
-                    t.foreignKey(["mailbox", "emailID"], references: "emails", columns: ["mailbox", "emailID"], onDelete: .cascade)
+        migrator.registerMigration(
+            "Create email cache tables",
+            migrate: { db in
+                try db.create(table: "emailRecord") { t in
+                    t.column("mailbox").notNull()
+                    t.column("id").notNull()
+                    t.column("from").notNull()
+                    t.column("sender").notNull()
+                    t.column("replyTo").notNull()
+                    t.column("to").notNull()
+                    t.column("bcc").notNull()
+                    t.column("cc").notNull()
+                    t.column("received")
+                    t.column("sent")
+                    t.column("messageID").notNull()
+                    t.column("threadID").notNull()
+                    t.column("inReplyTo").notNull()
+                    t.column("subject")
+                    t.column("blobID")
+                    t.column("uid")
+                    t.column("preview")
+                    t.column("flags")
+                    t.primaryKey(["mailbox", "id"])
+                }
+                try db.create(index: "emailRecord_by_mailbox_uid", on: "emailRecord", columns: ["mailbox", "uid"])
+
+                try db.create(table: "emailBodyRecord") { t in
+                    t.column("mailbox").notNull()
+                    t.column("emailId").notNull()
+                    t.column("body").notNull()
+                    t.primaryKey(["mailbox", "emailId"])
+                    t.foreignKey(["mailbox", "emailId"], references: "emailRecord", columns: ["mailbox", "id"], onDelete: .cascade)
                 }
             })
     }

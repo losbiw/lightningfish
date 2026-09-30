@@ -78,7 +78,7 @@ public struct Email: CustomStringConvertible, Identifiable, Sendable {
 }
 
 extension Email {
-    public init(_ record: EmailRecord, body: Body?) {
+    public init(_ record: EmailRecord, body: EmailBody?) {
         self.from = record.from
         self.sender = record.sender
         self.replyTo = record.replyTo
@@ -94,7 +94,7 @@ extension Email {
         self.blobID = record.blobID
         self.body = body
         self.flags = record.flags ?? []
-        self.uid = record.uid
+        self.uid = record.uid.map { UID(rawValue: $0) }
         self.preview = record.preview
         self.id = record.id
     }

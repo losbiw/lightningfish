@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1521D8232D9C4D6300C4DFDF"
-               BuildableName = "ThunderbirdTests.xctest"
-               BlueprintName = "ThunderbirdTests"
-               ReferencedContainer = "container:Thunderbird.xcodeproj">
+               BuildableName = "LightningfishTests.xctest"
+               BlueprintName = "LightningfishTests"
+               ReferencedContainer = "container:Lightningfish.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:../Thunderbird.xctestplan"
+            reference = "container:../Lightningfish.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -41,9 +41,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1521D8232D9C4D6300C4DFDF"
-               BuildableName = "ThunderbirdTests.xctest"
-               BlueprintName = "ThunderbirdTests"
-               ReferencedContainer = "container:Thunderbird.xcodeproj">
+               BuildableName = "LightningfishTests.xctest"
+               BlueprintName = "LightningfishTests"
+               ReferencedContainer = "container:Lightningfish.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

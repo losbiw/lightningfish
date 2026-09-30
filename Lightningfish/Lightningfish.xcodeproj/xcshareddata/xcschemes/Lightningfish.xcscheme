@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1521D8152D9C4D6200C4DFDF"
-               BuildableName = "Thunderbird.app"
-               BlueprintName = "Thunderbird"
-               ReferencedContainer = "container:Thunderbird.xcodeproj">
+               BuildableName = "Lightningfish.app"
+               BlueprintName = "Lightningfish"
+               ReferencedContainer = "container:Lightningfish.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,9 +35,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1521D8232D9C4D6300C4DFDF"
-               BuildableName = "ThunderbirdTests.xctest"
-               BlueprintName = "ThunderbirdTests"
-               ReferencedContainer = "container:Thunderbird.xcodeproj">
+               BuildableName = "LightningfishTests.xctest"
+               BlueprintName = "LightningfishTests"
+               ReferencedContainer = "container:Lightningfish.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -58,9 +58,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1521D8152D9C4D6200C4DFDF"
-            BuildableName = "Thunderbird.app"
-            BlueprintName = "Thunderbird"
-            ReferencedContainer = "container:Thunderbird.xcodeproj">
+            BuildableName = "Lightningfish.app"
+            BlueprintName = "Lightningfish"
+            ReferencedContainer = "container:Lightningfish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1521D8152D9C4D6200C4DFDF"
-            BuildableName = "Thunderbird.app"
-            BlueprintName = "Thunderbird"
-            ReferencedContainer = "container:Thunderbird.xcodeproj">
+            BuildableName = "Lightningfish.app"
+            BlueprintName = "Lightningfish"
+            ReferencedContainer = "container:Lightningfish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

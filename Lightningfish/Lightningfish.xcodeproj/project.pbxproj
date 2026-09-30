@@ -18,17 +18,17 @@
 			containerPortal = 1521D80E2D9C4D6200C4DFDF /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 1521D8152D9C4D6200C4DFDF;
-			remoteInfo = Thunderbird;
+			remoteInfo = Lightningfish;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1521D8162D9C4D6200C4DFDF /* Thunderbird.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Thunderbird.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1521D8242D9C4D6300C4DFDF /* ThunderbirdTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThunderbirdTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1521D8162D9C4D6200C4DFDF /* Lightningfish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lightningfish.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1521D8242D9C4D6300C4DFDF /* LightningfishTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LightningfishTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		142ECC532ECE4D1C00518776 /* Exceptions for "Thunderbird" folder in "ThunderbirdTests" target */ = {
+		142ECC532ECE4D1C00518776 /* Exceptions for "Lightningfish" folder in "LightningfishTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
@@ -38,30 +38,30 @@
 				Util/SmartDateFormatter.swift,
 				Util/UtilFunctions.swift,
 			);
-			target = 1521D8232D9C4D6300C4DFDF /* ThunderbirdTests */;
+			target = 1521D8232D9C4D6300C4DFDF /* LightningfishTests */;
 		};
-		1593E40E2E7254CC00B82438 /* Exceptions for "Thunderbird" folder in "Thunderbird" target */ = {
+		1593E40E2E7254CC00B82438 /* Exceptions for "Lightningfish" folder in "Lightningfish" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 1521D8152D9C4D6200C4DFDF /* Thunderbird */;
+			target = 1521D8152D9C4D6200C4DFDF /* Lightningfish */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1521D8272D9C4D6300C4DFDF /* ThunderbirdTests */ = {
+		1521D8272D9C4D6300C4DFDF /* LightningfishTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ThunderbirdTests;
+			path = LightningfishTests;
 			sourceTree = "<group>";
 		};
-		1521D85A2D9C4EED00C4DFDF /* Thunderbird */ = {
+		1521D85A2D9C4EED00C4DFDF /* Lightningfish */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1593E40E2E7254CC00B82438 /* Exceptions for "Thunderbird" folder in "Thunderbird" target */,
-				142ECC532ECE4D1C00518776 /* Exceptions for "Thunderbird" folder in "ThunderbirdTests" target */,
+				1593E40E2E7254CC00B82438 /* Exceptions for "Lightningfish" folder in "Lightningfish" target */,
+				142ECC532ECE4D1C00518776 /* Exceptions for "Lightningfish" folder in "LightningfishTests" target */,
 			);
-			path = Thunderbird;
+			path = Lightningfish;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -90,8 +90,8 @@
 		1521D80D2D9C4D6200C4DFDF = {
 			isa = PBXGroup;
 			children = (
-				1521D85A2D9C4EED00C4DFDF /* Thunderbird */,
-				1521D8272D9C4D6300C4DFDF /* ThunderbirdTests */,
+				1521D85A2D9C4EED00C4DFDF /* Lightningfish */,
+				1521D8272D9C4D6300C4DFDF /* LightningfishTests */,
 				15EC20F42DC8E50F0039FB48 /* Frameworks */,
 				1521D8172D9C4D6200C4DFDF /* Products */,
 			);
@@ -100,8 +100,8 @@
 		1521D8172D9C4D6200C4DFDF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1521D8162D9C4D6200C4DFDF /* Thunderbird.app */,
-				1521D8242D9C4D6300C4DFDF /* ThunderbirdTests.xctest */,
+				1521D8162D9C4D6200C4DFDF /* Lightningfish.app */,
+				1521D8242D9C4D6300C4DFDF /* LightningfishTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -116,9 +116,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1521D8152D9C4D6200C4DFDF /* Thunderbird */ = {
+		1521D8152D9C4D6200C4DFDF /* Lightningfish */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1521D8382D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "Thunderbird" */;
+			buildConfigurationList = 1521D8382D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "Lightningfish" */;
 			buildPhases = (
 				1521D8122D9C4D6200C4DFDF /* Sources */,
 				1521D8132D9C4D6200C4DFDF /* Frameworks */,
@@ -129,21 +129,21 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				1521D85A2D9C4EED00C4DFDF /* Thunderbird */,
+				1521D85A2D9C4EED00C4DFDF /* Lightningfish */,
 			);
-			name = Thunderbird;
+			name = Lightningfish;
 			packageProductDependencies = (
 				15501F1B2F9666AB0041B309 /* Bolt */,
 				15501F1D2F9666AB0041B309 /* Core */,
 				FEFA29FA2FF6AAF700C8210B /* InfomaniakRichHTMLEditor */,
 			);
-			productName = Thunderbird;
-			productReference = 1521D8162D9C4D6200C4DFDF /* Thunderbird.app */;
+			productName = Lightningfish;
+			productReference = 1521D8162D9C4D6200C4DFDF /* Lightningfish.app */;
 			productType = "com.apple.product-type.application";
 		};
-		1521D8232D9C4D6300C4DFDF /* ThunderbirdTests */ = {
+		1521D8232D9C4D6300C4DFDF /* LightningfishTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1521D83B2D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "ThunderbirdTests" */;
+			buildConfigurationList = 1521D83B2D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "LightningfishTests" */;
 			buildPhases = (
 				1521D8202D9C4D6300C4DFDF /* Sources */,
 				1521D8212D9C4D6300C4DFDF /* Frameworks */,
@@ -155,13 +155,13 @@
 				1521D8262D9C4D6300C4DFDF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				1521D8272D9C4D6300C4DFDF /* ThunderbirdTests */,
+				1521D8272D9C4D6300C4DFDF /* LightningfishTests */,
 			);
-			name = ThunderbirdTests;
+			name = LightningfishTests;
 			packageProductDependencies = (
 			);
-			productName = ThunderbirdTests;
-			productReference = 1521D8242D9C4D6300C4DFDF /* ThunderbirdTests.xctest */;
+			productName = LightningfishTests;
+			productReference = 1521D8242D9C4D6300C4DFDF /* LightningfishTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -183,7 +183,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 1521D8112D9C4D6200C4DFDF /* Build configuration list for PBXProject "Thunderbird" */;
+			buildConfigurationList = 1521D8112D9C4D6200C4DFDF /* Build configuration list for PBXProject "Lightningfish" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -270,8 +270,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1521D8152D9C4D6200C4DFDF /* Thunderbird */,
-				1521D8232D9C4D6300C4DFDF /* ThunderbirdTests */,
+				1521D8152D9C4D6200C4DFDF /* Lightningfish */,
+				1521D8232D9C4D6300C4DFDF /* LightningfishTests */,
 			);
 		};
 /* End PBXProject section */
@@ -313,7 +313,7 @@
 /* Begin PBXTargetDependency section */
 		1521D8262D9C4D6300C4DFDF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1521D8152D9C4D6200C4DFDF /* Thunderbird */;
+			target = 1521D8152D9C4D6200C4DFDF /* Lightningfish */;
 			targetProxy = 1521D8252D9C4D6300C4DFDF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -444,19 +444,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = App;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Thunderbird/Thunderbird.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Lightningfish/Lightningfish.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GWZQ4A3TT7;
-				DOCC_HOSTING_BASE_PATH = "thunderbird-ios";
+				DOCC_HOSTING_BASE_PATH = "Lightningfish-ios";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Thunderbird/Info.plist;
+				INFOPLIST_FILE = Lightningfish/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -492,19 +492,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = App;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Thunderbird/Thunderbird.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Lightningfish/Lightningfish.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GWZQ4A3TT7;
-				DOCC_HOSTING_BASE_PATH = "thunderbird-ios";
+				DOCC_HOSTING_BASE_PATH = "Lightningfish-ios";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Thunderbird/Info.plist;
+				INFOPLIST_FILE = Lightningfish/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -546,7 +546,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.thunderbird.ThunderbirdTests;
+				PRODUCT_BUNDLE_IDENTIFIER = net.Lightningfish.LightningfishTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -554,7 +554,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Thunderbird.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Thunderbird";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lightningfish.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Lightningfish";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Debug;
@@ -570,7 +570,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = net.thunderbird.ThunderbirdTests;
+				PRODUCT_BUNDLE_IDENTIFIER = net.Lightningfish.LightningfishTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -578,7 +578,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Thunderbird.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Thunderbird";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lightningfish.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Lightningfish";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Release;
@@ -586,7 +586,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1521D8112D9C4D6200C4DFDF /* Build configuration list for PBXProject "Thunderbird" */ = {
+		1521D8112D9C4D6200C4DFDF /* Build configuration list for PBXProject "Lightningfish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1521D8362D9C4D6300C4DFDF /* Debug */,
@@ -595,7 +595,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1521D8382D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "Thunderbird" */ = {
+		1521D8382D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "Lightningfish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1521D8392D9C4D6300C4DFDF /* Debug */,
@@ -604,7 +604,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1521D83B2D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "ThunderbirdTests" */ = {
+		1521D83B2D9C4D6300C4DFDF /* Build configuration list for PBXNativeTarget "LightningfishTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1521D83C2D9C4D6300C4DFDF /* Debug */,
@@ -629,7 +629,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		FEFA29E32FF59CD800C8210B /* XCRemoteSwiftPackageReference "swift-rich-html-editor" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/thunderbird/swift-rich-html-editor";
+			repositoryURL = "https://github.com/Thunderbird/swift-rich-html-editor";
 			requirement = {
 				branch = main;
 				kind = branch;

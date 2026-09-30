@@ -5,17 +5,17 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
-      location = "group:Thunderbird/Thunderbird.xcodeproj">
+      location = "group:Lightningfish/Lightningfish.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Thunderbird.xctestplan">
+      location = "group:Lightningfish.xctestplan">
    </FileRef>
    <FileRef
       location = "group:Bolt">
    </FileRef>
    <FileRef
-         location = "group:Core">
-      </FileRef>
+      location = "group:Core">
+   </FileRef>
    <FileRef
       location = "group:docs">
    </FileRef>

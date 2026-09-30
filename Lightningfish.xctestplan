@@ -16,7 +16,7 @@
       "target" : {
         "containerPath" : "container:rainfrog.xcodeproj",
         "identifier" : "1521D8232D9C4D6300C4DFDF",
-        "name" : "ThunderbirdTests"
+        "name" : "LightningfishTests"
       }
     },
     {

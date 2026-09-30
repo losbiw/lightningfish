@@ -136,7 +136,7 @@ public struct EmailRecord: Codable, Equatable, Hashable, Identifiable, Fetchable
     public let blobID: String?
     public let uid: UID?
     public let preview: String?
-    public let flags: Set<Flag>?
+    public let flags: Set<UnifiedFlag>?
     public let id: String
 
     var body: EmailBodyRecord?

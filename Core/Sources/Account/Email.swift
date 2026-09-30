@@ -45,7 +45,7 @@ public struct Email: CustomStringConvertible, Identifiable, Sendable {
         subject: String? = nil,
         body: EmailBody? = nil,
         blobID: String? = nil,
-        flags: Set<Flag>,
+        flags: Set<UnifiedFlag> = [],
         uid: UID? = nil,
         preview: String? = nil,
         id: String? = nil
@@ -93,7 +93,7 @@ extension Email {
         self.subject = record.subject
         self.blobID = record.blobID
         self.body = body
-        self.flags = record.flags
+        self.flags = record.flags ?? []
         self.uid = record.uid
         self.preview = record.preview
         self.id = record.id
@@ -102,7 +102,7 @@ extension Email {
 
 // UI-related properties
 extension Email {
-    public var unread: Bool { flags.contains(.seen) }
+    public var unread: Bool { !flags.contains(.seen) }
 }
 
 extension Email {
@@ -138,7 +138,7 @@ extension Email {
             inReplyTo: message.inReplyTo,
             subject: message.envelope.subject,
             body: try? EmailBody(body: message.body),
-            flags: message.flags,
+            flags: Set(imap: message.flags),
             uid: message.uid,
             preview: message.preview,
             id: message.emailID ?? message.gmailID
@@ -162,8 +162,7 @@ extension Email {
             subject: email.subject,
             body: try? EmailBody(email: email),
             blobID: email.blobID,
-            // FIXME: replace the flags placeholder
-            flags: Set(),
+            flags: Set(jmapKeywords: email.keywords),
             uid: UID(rawValue: UInt32(1)),
             preview: email.preview,
             id: email.id
@@ -258,7 +257,7 @@ extension IMAP.Message {
                 inReplyTo: email.inReplyTo.first,
                 messageID: email.messageID.first
             ),
-            flags: [],
+            flags: email.flags.imapFlags,
             gmailLabels: [],
             gmailMessageID: email.gmailMessageID,
             gmailThreadID: email.gmailThreadID,
@@ -277,7 +276,7 @@ extension JMAP.Email {
             blobID: email.blobID ?? "",
             threadID: email.threadID.first ?? "",
             mailboxIDs: [:],  // TODO: JMAP mailbox IDs not carried
-            keywords: [:],  // TODO: JMAP keywords not implemented
+            keywords: email.flags.jmapKeywords,
             size: 0,
             receivedAt: email.received,
             sentAt: email.sent,
@@ -296,7 +295,7 @@ extension JMAP.Email {
             htmlBody: [],
             attachments: [],  // TODO: JMAP attachments not implemented
             hasAttachment: false,
-            preview: nil,  // // TODO: JMAP preview not implemented
+            preview: nil,  // TODO: JMAP preview not implemented
             id: email.id
         )
     }
@@ -308,105 +307,4 @@ extension Date {
 
 private extension UInt64 {
     static let gmailIDFloor: Self = 1_000_000_000_000
-}
-
-// lossless conversion to a unified model from IMAP flags/JMAP keywords
-
-public enum UnifiedFlag: Hashable, Sendable, Codable {
-    case seen
-    case answered
-    case flagged
-    case draft
-    case deleted
-    case keyword(String)
-}
-
-private extension Flag {
-    func normalize(rawFlag: String) -> String {
-        if rawFlag.starts(with: "\\") {
-            return String(rawFlag.dropFirst(2))
-        }
-
-        return rawFlag
-    }
-
-    init(flag: UnifiedFlag) {
-        switch flag {
-        case .seen:
-            self = .seen
-        case .answered:
-            self = .answered
-        case .flagged:
-            self = .flagged
-        case .deleted:
-            self = .deleted
-        case .draft:
-            self = .draft
-        case .keyword(let value):
-            self = Self.init(normalize(rawFlag: value))
-        }
-    }
-}
-
-private extension JMAP.Email.Keyword {
-    func normalize(rawFlag: String) -> String {
-        if rawFlag.starts(with: "$") {
-            return String(rawFlag.dropFirst())
-        }
-
-        return rawFlag
-    }
-
-    init(flag: UnifiedFlag) {
-        switch flag {
-        case .seen:
-            self = .seen
-        case .answered:
-            self = .answered
-        case .flagged:
-            self = .flagged
-        case .deleted:
-            self = .deleted
-        case .draft:
-            self = .draft
-        case .keyword(let value):
-            self = Flag.extension(value)
-        }
-    }
-}
-
-private extension UnifiedFlag {
-    func toIMAP(rawFlag: String) -> String {
-        if rawFlag.starts(with: "\\") {
-            return String(rawFlag.dropFirst(2))
-        }
-
-        return rawFlag
-    }
-
-    func to(rawFlag: String) -> String {
-        if rawFlag.starts(with: "\\") {
-            return String(rawFlag.dropFirst(2))
-        }
-
-        return rawFlag
-    }
-
-    init(imapFlag: Flag) {
-        switch imapFlag {
-        case .seen:
-            self = .seen
-        case .answered:
-            self = .answered
-        case .flagged:
-            self = .flagged
-        case .deleted:
-            self = .deleted
-        case .draft:
-            self = .draft
-        default:
-            // custom IMAP flags start with a backslash so we drop it
-            self = .keyword(String(imapFlag).dropFirst())
-        }
-    }
 }

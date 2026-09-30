@@ -17,7 +17,7 @@ struct AddAccountView: View {
     @State private var emailAddress: String
     @State private var account: Account?
     @State private var config: ClientConfig?
-    @State private var error: Error?
+    @State private var failure: Failure?
 
     private func refreshAccount() {
         account = emailAddress.isEmailAddress ? Account(emailAddress, provider: config?.emailProvider) : nil
@@ -53,13 +53,18 @@ struct AddAccountView: View {
         .toolbar {
             Button(action: {
                 guard let account else { return }
-                accountManager.set(account)
-                dismiss()
+                do {
+                    try accountManager.set(account)
+                    dismiss()
+                } catch {
+                    failure = Failure(error, title: "Couldn't save the account")
+                }
             }) {
                 Text("Save")
             }
             .disabled(account == nil)
         }
+        .errorAlert($failure)
     }
 }
 

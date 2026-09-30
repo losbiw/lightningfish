@@ -10,69 +10,51 @@ import AuthenticationServices
 @Observable
 public final class AccountManager {
     public private(set) var allAccounts: [Account] = []
-    public var error: AccountError?
     private var store: LocalStore
 
     /// Feature flag enables autoconfiguring new accounts using [JMAP](https://jmap.io), when supported by email provider.
     public var isJMAPAvailable: Bool = false
 
+    public init(store: LocalStore) {
+        self.store = store
+    }
+
+    /// Loads accounts from the store; call once when the app starts.
+    public func loadAccounts() throws {
+        allAccounts = try store.loadAccounts()
+    }
+
     public func account(for id: UUID) -> Account? {
         allAccounts.first(where: { $0.id == id })
     }
 
-    public func set(_ account: Account, at index: Int? = nil) {
-        error = nil
-        let backupAccounts: [Account] = allAccounts
-        do {
-            var accounts: [Account] = allAccounts
-            let currentIndex: Int? = accounts.firstIndex { account.id == $0.id }
-            if let currentIndex {
-                accounts.remove(at: currentIndex)
-            }
-            let index: Int? = index ?? currentIndex  // New index OR current index OR nil (append to end)
-            if let index, index < accounts.count {
-                accounts.insert(account, at: index)  // Insert at new or current target index
-            } else {
-                accounts.append(account)  // Append to end of array
-            }
-            allAccounts = accounts
-            try store.saveAccounts(accounts)
-            allAccounts = try store.loadAccounts()
-        } catch {
-            allAccounts = backupAccounts
-            self.error = .GRDB(error)
+    public func set(_ account: Account, at index: Int? = nil) throws {
+        var accounts: [Account] = allAccounts
+        let currentIndex: Int? = accounts.firstIndex { account.id == $0.id }
+        if let currentIndex {
+            accounts.remove(at: currentIndex)
         }
+        let index: Int? = index ?? currentIndex  // New index OR current index OR nil (append to end)
+        if let index, index < accounts.count {
+            accounts.insert(account, at: index)  // Insert at new or current target index
+        } else {
+            accounts.append(account)  // Append to end of array
+        }
+
+        try store.saveAccounts(accounts)
+        allAccounts = try store.loadAccounts()
     }
 
-    public func delete(_ account: Account) {
-        error = nil
-        do {
-            account.deleteAuthorization()
-            try store.deleteAccount(account.id)
-            allAccounts = try store.loadAccounts()
-        } catch {
-            self.error = .GRDB(error)
-        }
+    public func delete(_ account: Account) throws {
+        account.deleteAuthorization()
+        try store.deleteAccount(account.id)
+        allAccounts = try store.loadAccounts()
     }
 
-    public func deleteAccounts() {
-        error = nil
-        do {
-            URLCredentialStorage.shared.deleteAuthorizations()
-            try store.deleteAllAccounts()
-            allAccounts = []
-        } catch {
-            self.error = .GRDB(error)
-        }
-    }
-
-    public init(store: LocalStore) {
-        self.store = store
-        do {
-            allAccounts = try store.loadAccounts()
-        } catch {
-            self.error = .GRDB(error)
-        }
+    public func deleteAccounts() throws {
+        URLCredentialStorage.shared.deleteAuthorizations()
+        try store.deleteAllAccounts()
+        allAccounts = []
     }
 
     public func hasLoggedInAccount() -> Bool {
@@ -84,8 +66,11 @@ public final class AccountManager {
         return false
     }
 
-    public func checkAndRenewExpirations() async {
+    /// Renews expired OAuth tokens, applying every success and reporting all failures together.
+    public func checkAndRenewExpirations() async throws {
         var updatedAccounts: [Account] = []
+        var failures: [AccountError] = []
+
         for account in allAccounts {
             let serverAuth: Authorization = account.authorization
             guard account.incomingServer?.authenticationType == .oAuth2, serverAuth.isExpired else {
@@ -100,13 +85,20 @@ public final class AccountManager {
                 )
                 updatedAccounts.append(account)
             } catch {
-                self.error = .authorization(error)
+                failures.append(AccountError(error))
             }
         }
 
         for account in updatedAccounts {
-            self.set(account)
+            do {
+                try self.set(account)
+            } catch {
+                failures.append(AccountError(error))
+            }
         }
+
+        guard let failure = failures.first else { return }
+        throw failures.count == 1 ? failure : .multiple(failures)
     }
 
     private func renewExpiredToken(authConfig: OAuth2.Configuration, refreshToken: String, user: String, retry attempts: Int = 2) async throws -> Authorization {

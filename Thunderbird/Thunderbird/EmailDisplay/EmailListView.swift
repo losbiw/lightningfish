@@ -17,7 +17,7 @@ struct EmailListView: View {
     #if os(iOS)
     @State var editMode: EditMode = .inactive
     #endif
-    @State var error: EmailError?
+    @State var failure: Failure?
 
     func sortEmails(by strategy: SortStrategy) {
         //Not yet implemented
@@ -38,7 +38,7 @@ struct EmailListView: View {
                 try await session.markAsRead(emails: emails)
                 emails = try await session.loadEmails()
             } catch {
-                self.error = error
+                failure = Failure(error, title: "Couldn't mark messages as read")
             }
         }
     }
@@ -52,7 +52,7 @@ struct EmailListView: View {
             do {
                 emails = try await session.loadEmails()
             } catch {
-                self.error = EmailError.failedToLoad(error)
+                failure = Failure(error, title: "Couldn't load messages")
             }
         }
     }
@@ -67,7 +67,7 @@ struct EmailListView: View {
                 let additionalEmails = try await session.loadEmails(cursor: oldestEmail.uid)
                 emails.append(contentsOf: additionalEmails)
             } catch {
-                self.error = error
+                failure = Failure(error, title: "Couldn't load more messages")
             }
         }
     }
@@ -116,16 +116,7 @@ struct EmailListView: View {
 
                         ProgressView()
                             .progressViewStyle(.circular)
-                            .onAppear {
-                                do {
-                                    let oldestEmail = emails.first!
-                                    let additionalEmails = try session.loadEmails(cursor: oldestEmail.uid)
-
-                                    emails.append(contentsOf: additionalEmails)
-                                } catch {
-                                    self.error = error
-                                }
-                            }
+                            .onAppear { loadMoreEmails() }
                     }
                     #if os(iOS)
                     .environment(\.editMode, $editMode)
@@ -152,100 +143,96 @@ struct EmailListView: View {
                             ComposeView()
                         }
                     }
-                }
+            }
 
-                DrawerView(showDrawer: $showDrawer)
-                    .accessibilityHidden(!showDrawer)
-                    .environment(session)
-            }
-            .navigationTitle("inbox_header")
-            #if os(iOS)
-            .navigationBarBackButtonHidden(editMode.isEditing || showDrawer)
-            #endif
-            .toolbar {
-                ToolbarItem(placement: .leading) {
-                    Button {
-                        withAnimation {
-                            showDrawer = true
-                        }
-                    } label: {
-                        Label("Account", systemImage: "line.3.horizontal").labelStyle(.iconOnly)
-                    }.accessibilityHidden(showDrawer)
-                }
-                #if os(iOS)
-                ToolbarItem(placement: .cancellationAction) {
-                    if editMode.isEditing == true {
-                        Button(
-                            "close_button", systemImage: "xmark",
-                            action: {
-                                withAnimation {
-                                    editMode = .inactive
-                                }
-                            })
+            DrawerView(showDrawer: $showDrawer)
+                .accessibilityHidden(!showDrawer)
+                .environment(session)
+        }
+        .navigationTitle("inbox_header")
+        #if os(iOS)
+        .navigationBarBackButtonHidden(editMode.isEditing || showDrawer)
+        #endif
+        .toolbar {
+            ToolbarItem(placement: .leading) {
+                Button {
+                    withAnimation {
+                        showDrawer = true
                     }
-                }
-                #endif
-                ToolbarItem(placement: .trailing) {
-                    Menu {
-                        Button(
-                            "date_sort_button",
-                            action: {
-                                sortEmails(by: .date)
-                            })
-                        Button(
-                            "read_status_sort_button",
-                            action: {
-                                sortEmails(by: .status)
-                            })
-                        Button(
-                            "has_attachments_sort_button",
-                            action: {
-                                sortEmails(by: .hasAttachments)
-                            })
-                    } label: {
-                        Label("sort_button", systemImage: "line.3.horizontal.decrease", )
-                    }.accessibilityHidden(showDrawer)
-                }
-                ToolbarItem(placement: .trailing) {
-                    Menu {
-                        #if os(iOS)
-                        Button(
-                            editMode.isEditing ? "done_button" : "select_all_button",
-                            action: {
-                                withAnimation {
-                                    editMode = editMode.isEditing ? .inactive : .active
-                                }
-                                selectAll()
-                            })
-                        #endif
-                        Button(
-                            "mark_all_read_button",
-                            action: {
-                                markSelectionAsRead()
-                            })
-                        Button(
-                            "account_sign_out_button",
-                            action: {
-                                do {
-                                    try session.deleteCurrentAccount()
-                                } catch {
-                                    self.error = error
-                                }
-                            })
-                    } label: {
-                        Label("options_button", systemImage: "ellipsis")
-                    }.accessibilityHidden(showDrawer)
+                } label: {
+                    Label("Account", systemImage: "line.3.horizontal").labelStyle(.iconOnly)
+                }.accessibilityHidden(showDrawer)
+            }
+            #if os(iOS)
+            ToolbarItem(placement: .cancellationAction) {
+                if editMode.isEditing == true {
+                    Button(
+                        "close_button", systemImage: "xmark",
+                        action: {
+                            withAnimation {
+                                editMode = .inactive
+                            }
+                        })
                 }
             }
-            .onChange(of: session.selectedMailbox, initial: true) {
-                loadEmails()
+            #endif
+            ToolbarItem(placement: .trailing) {
+                Menu {
+                    Button(
+                        "date_sort_button",
+                        action: {
+                            sortEmails(by: .date)
+                        })
+                    Button(
+                        "read_status_sort_button",
+                        action: {
+                            sortEmails(by: .status)
+                        })
+                    Button(
+                        "has_attachments_sort_button",
+                        action: {
+                            sortEmails(by: .hasAttachments)
+                        })
+                } label: {
+                    Label("sort_button", systemImage: "line.3.horizontal.decrease", )
+                }.accessibilityHidden(showDrawer)
+            }
+            ToolbarItem(placement: .trailing) {
+                Menu {
+                    #if os(iOS)
+                    Button(
+                        editMode.isEditing ? "done_button" : "select_all_button",
+                        action: {
+                            withAnimation {
+                                editMode = editMode.isEditing ? .inactive : .active
+                            }
+                            selectAll()
+                        })
+                    #endif
+                    Button(
+                        "mark_all_read_button",
+                        action: {
+                            markSelectionAsRead()
+                        })
+                    Button(
+                        "account_sign_out_button",
+                        action: {
+                            do {
+                                try session.deleteCurrentAccount()
+                            } catch {
+                                failure = Failure(error, title: "Couldn't remove the account")
+                            }
+                        })
+                } label: {
+                    Label("options_button", systemImage: "ellipsis")
+                }.accessibilityHidden(showDrawer)
             }
         }
+        .onChange(of: session.selectedMailbox, initial: true) {
+            loadEmails()
+        }
+        .errorAlert($failure)
     }
-}
-
-public enum EmailError: Error {
-    case failedToLoad(Error)
 }
 
 public enum SortStrategy {

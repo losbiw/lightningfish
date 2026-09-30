@@ -17,7 +17,7 @@ public struct LocalStore {
     private var dbQueue: DatabaseQueue
 
     public init() throws {
-        var defaultDBURL = try FileManager.default
+        let defaultDBURL = try FileManager.default
             .url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             .appendingPathComponent("rainfrog.sqlite")
             .path
@@ -26,19 +26,16 @@ public struct LocalStore {
     }
 
     public init(dbPath: String) throws {
-        var migrator = LocalStoreMigrator()
+        let migrator = LocalStoreMigrator()
 
         dbQueue = try DatabaseQueue(path: dbPath)
-
         try migrator.applyMigrations(db: dbQueue)
     }
 
     public func loadPreferences() throws -> UserPreferences? {
-        let session = try dbQueue.read { db in
+        try dbQueue.read { db in
             try UserPreferences.find(db, id: "1")
         }
-
-        return session
     }
 
     public func savePreferences(_ preferences: UserPreferences) throws {
@@ -53,11 +50,9 @@ public struct LocalStore {
 // MARK: Account DB methods
 extension LocalStore {
     public func loadAccounts() throws -> [Account] {
-        let accounts = try dbQueue.read { db in
+        try dbQueue.read { db in
             try Account.fetchAll(db)
         }
-
-        return accounts
     }
 
     public func deleteAccount(_ id: UUID) throws {
@@ -82,7 +77,7 @@ extension LocalStore {
 // MARK: Mailbox DB methods
 extension LocalStore {
     public func loadEmails(for mailbox: String, cursor: UID?) throws -> [Email] {
-        let emails = try dbQueue.read { db in
+        try dbQueue.read { db in
             var request =
                 EmailRecord
                 .filter(Column("mailbox") == mailbox)
@@ -94,8 +89,6 @@ extension LocalStore {
 
             return try EmailRecord.fetchAll(db, request).map { $0.toEmail() }
         }
-
-        return emails
     }
 
     public func cacheEmails(in mailbox: String, emails: [Email]) throws {

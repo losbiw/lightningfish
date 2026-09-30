@@ -17,6 +17,7 @@ struct EditAccountView: View {
     @State private var account: Account
     @State private var incomingServer: Server
     @State private var outgoingServer: Server
+    @State private var failure: Failure?
 
     // MARK: View
     var body: some View {
@@ -40,17 +41,26 @@ struct EditAccountView: View {
                     incomingServer,
                     outgoingServer
                 ]
-                accountManager.set(account)
-                dismiss()
+                do {
+                    try accountManager.set(account)
+                    dismiss()
+                } catch {
+                    failure = Failure(error, title: "Couldn't save the account")
+                }
             }) {
                 Text("Save")
             }
         }
+        .errorAlert($failure)
     }
 }
 
 #Preview("Edit Account View") {
+    @Previewable @State var store = try! LocalStore()
+    @Previewable @State var accountManager = AccountManager(store: store)
+
     NavigationStack {
         EditAccountView(Account("example@thunderbird.net"))
     }
+    .environment(accountManager)
 }

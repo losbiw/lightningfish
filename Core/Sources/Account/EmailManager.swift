@@ -9,34 +9,30 @@ import Foundation
 public final class EmailManager {
     public let account: Account
     public private(set) var email: Email?
-    public var error: AccountError?
 
     public init(_ email: Email?, account: Account) {
         self.account = account
         self.email = email
     }
 
-    public func refreshEmail() async {
+    public func refreshEmail() async throws {
         guard let email else { return }
-        do {
-            switch account.emailProtocol {
-            case .imap:
-                guard let uid: UID = email.uid else {
-                    throw IMAPError.capabilityNotSupported("UID")
-                }
-                let client: IMAPClient = try await account.imapClient
-                let message: Message = try await client.fetch(uid: uid)
-                self.email = Email(message)
-            case .jmap:
-                let client: JMAPClient = try await account.jmapClient
-                let emails: [JMAP.Email] = try await client.emails([email.id])
-                guard !emails.isEmpty else {
-                    throw JMAPError.method(.invalidResultReference)
-                }
-                self.email = Email(emails[0])
+
+        switch account.emailProtocol {
+        case .imap:
+            guard let uid: UID = email.uid else {
+                throw IMAPError.capabilityNotSupported("UID")
             }
-        } catch {
-            self.error = AccountError(error)
+            let client: IMAPClient = try await account.imapClient
+            let message: Message = try await client.fetch(uid: uid)
+            self.email = Email(message)
+        case .jmap:
+            let client: JMAPClient = try await account.jmapClient
+            let emails: [JMAP.Email] = try await client.emails([email.id])
+            guard !emails.isEmpty else {
+                throw JMAPError.method(.invalidResultReference)
+            }
+            self.email = Email(emails[0])
         }
     }
 }

@@ -7,19 +7,44 @@ import SwiftUI
 
 @main
 struct App: SwiftUI.App {
-    @State private var store: LocalStore
     @State private var accountManager: AccountManager
     @State private var session: SessionManager
     @State private var showAlert = false
     @State private var featureFlags: FeatureFlags = FeatureFlags(distribution: .current)
+    @State private var failure: Failure?
 
     init() {
-        let store = try! LocalStore()
-        let accountManager = AccountManager(store: store)
-        session = try! SessionManager(store: store, accountManager: accountManager)
+        let store: LocalStore
+        var failure: Failure?
 
-        self.store = store
+        do {
+            store = try LocalStore()
+        } catch {
+            // Without the on-disk database the app can still run, and report why nothing is stored.
+            store = try! LocalStore(dbPath: ":memory:")
+            failure = Failure(error, title: "Local storage is unavailable")
+        }
+
+        let accountManager = AccountManager(store: store)
+
+        do {
+            try accountManager.loadAccounts()
+        } catch {
+            failure = failure ?? Failure(error, title: "Couldn't load your accounts")
+        }
+
+        // The session picks its default account from the loaded accounts, so it must come after them.
+        let session = SessionManager(store: store, accountManager: accountManager)
+
+        do {
+            try session.load()
+        } catch {
+            failure = failure ?? Failure(error, title: "Couldn't restore your preferences")
+        }
+
         self.accountManager = accountManager
+        self.session = session
+        self.failure = failure
     }
 
     // MARK: App
@@ -34,6 +59,7 @@ struct App: SwiftUI.App {
                     FeatureNotImplementedView()
                 }
             }
+            .errorAlert($failure)
         }.onChange(of: AlertManager.shared.showAlert) {
             showAlert = AlertManager.shared.showAlert
         }

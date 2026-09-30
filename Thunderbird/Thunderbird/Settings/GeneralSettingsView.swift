@@ -8,6 +8,7 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(\.openURL) private var openURL: OpenURLAction
+    @State private var failure: Failure?
 
     var body: some View {
         NavigationStack {
@@ -22,7 +23,11 @@ struct GeneralSettingsView: View {
                             Spacer()
                             Menu {
                                 Button(action: {
-                                    accountManager.delete(account)
+                                    do {
+                                        try accountManager.delete(account)
+                                    } catch {
+                                        failure = Failure(error, title: "Couldn't remove the account")
+                                    }
                                 }) {
                                     Text("account_sign_out_button")
                                 }
@@ -50,6 +55,8 @@ struct GeneralSettingsView: View {
                         })
                 }
             }
-        }.navigationTitle("settings_header")
+        }
+        .navigationTitle("settings_header")
+        .errorAlert($failure)
     }
 }

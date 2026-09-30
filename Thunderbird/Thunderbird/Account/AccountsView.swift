@@ -7,6 +7,7 @@ import SwiftUI
 
 struct AccountsView: View {
     @Environment(AccountManager.self) private var accountManager: AccountManager
+    @State private var failure: Failure?
 
     // MARK: View
     var body: some View {
@@ -18,7 +19,11 @@ struct AccountsView: View {
                         HStack {
                             // Delete account
                             Button(action: {
-                                accountManager.delete(account)
+                                do {
+                                    try accountManager.delete(account)
+                                } catch {
+                                    failure = Failure(error, title: "Couldn't remove the account")
+                                }
                             }) {
                                 Image(systemName: "trash")
                             }
@@ -51,6 +56,7 @@ struct AccountsView: View {
                 }
             }
         }
+        .errorAlert($failure)
     }
 }
 

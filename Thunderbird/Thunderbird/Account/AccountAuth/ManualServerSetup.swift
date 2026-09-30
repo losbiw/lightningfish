@@ -35,6 +35,7 @@ struct ManualServerSetup: View {
     @State private var manualConfig: Bool
     @State private var account: Account
     @State private var error: Error?
+    @State private var failure: Failure?
     @State private var authConfig: OAuth2.Configuration?
 
     // MARK: View
@@ -148,9 +149,10 @@ struct ManualServerSetup: View {
                         ]
                     }
 
-                    accountManager.set(account)
-                    if let error = accountManager.error {
-                        self.error = error
+                    do {
+                        try accountManager.set(account)
+                    } catch {
+                        failure = Failure(error, title: "Couldn't save the account")
                     }
                 }) {
                     Text("account_oauth_sign_in_button")
@@ -167,6 +169,7 @@ struct ManualServerSetup: View {
         .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
         #endif
         .navigationTitle("account_server_manual_configuration")
+        .errorAlert($failure)
     }
 }
 

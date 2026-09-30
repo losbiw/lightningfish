@@ -20,13 +20,12 @@ public final class UserPreferencesManager {
         let firstAccount = accounts.first
         
         self.store = store
-        let defaultPreferences = UserPreferences(selectedAccountId: firstAccount?.id, selectedMailboxByAccount: [:])
-        
-        do {
-            preferences = try store.loadPreferences() ?? defaultPreferences
-        } catch {
-            preferences = defaultPreferences
-        }
+        preferences = UserPreferences(selectedAccountId: firstAccount?.id, selectedMailboxByAccount: [:])
+    }
+    
+    /// Loads persisted preferences; call once when the app starts.
+    public func load() throws {
+        preferences = try store.loadPreferences() ?? preferences
     }
     
     public var selectedAccountId: UUID? { preferences.selectedAccountId }
@@ -39,35 +38,34 @@ public final class UserPreferencesManager {
     public func selectAccount(_ id: UUID) throws {
         let fallbackId = preferences.selectedAccountId
         
+        preferences.selectedAccountId = id
         do {
-            preferences.selectedAccountId = id
             try store.savePreferences(preferences)
         } catch {
-            self.preferences.selectedAccountId = fallbackId
-            // TODO: report a non-critical "failed to select account" error here
-            throw error
+            preferences.selectedAccountId = fallbackId
+            throw AccountError(error)
         }
     }
     
     public func selectMailbox(_ mailbox: String, for accountId: UUID) throws {
         let fallbackMap = preferences.selectedMailboxByAccount
         
+        preferences.selectedMailboxByAccount[accountId] = mailbox
         do {
-            preferences.selectedMailboxByAccount[accountId] = mailbox
             try store.savePreferences(preferences)
         } catch {
-            self.preferences.selectedMailboxByAccount = fallbackMap
-            throw error
+            preferences.selectedMailboxByAccount = fallbackMap
+            throw AccountError(error)
         }
     }
     
     /// Assumes mailbox is being selected for current `SessionStorage.selectedAccountId`
     public func selectMailbox(_ mailbox: String) throws {
         guard let currentAccountId = preferences.selectedAccountId else {
-            throw PreferencesError.account("No accounted selected")
+            throw AccountError.preferences(.account("No account selected"))
         }
         
-        try selectMailbox(mailbox, for: preferences.selectedAccountId!)
+        try selectMailbox(mailbox, for: currentAccountId)
     }
 }
 
@@ -87,8 +85,13 @@ public struct UserPreferences: Codable, Identifiable, FetchableRecord, Persistab
 }
 
 
-public enum PreferencesError: Error {
-    case store(Error)
+public enum PreferencesError: Error, CustomStringConvertible {
     case account(String)
-}
 
+    // MARK: CustomStringConvertible
+    public var description: String {
+        switch self {
+        case .account(let message): message
+        }
+    }
+}

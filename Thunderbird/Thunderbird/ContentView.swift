@@ -8,6 +8,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(SessionManager.self) private var session: SessionManager
     @Environment(AccountManager.self) private var accountManager: AccountManager
+    @State private var failure: Failure?
 
     @State private var isSetupShown: Bool = false
 
@@ -25,9 +26,13 @@ struct ContentView: View {
             }
             .task {
                 isSetupShown = false
-                await accountManager.checkAndRenewExpirations()
+                do {
+                    try await accountManager.checkAndRenewExpirations()
+                } catch {
+                    failure = Failure(error, title: "Couldn't refresh your sign-ins")
+                }
             }
-            .error()
+            .errorAlert($failure)
         }
     }
 }
@@ -35,7 +40,7 @@ struct ContentView: View {
 #Preview("Content View") {
     @Previewable @State var store = try! LocalStore()
     @Previewable @State var accountManager = AccountManager(store: store)
-    @Previewable @State var session = try! SessionManager(store: store, accountManager: accountManager)
+    @Previewable @State var session = SessionManager(store: store, accountManager: accountManager)
 
     ContentView()
         .environment(session)

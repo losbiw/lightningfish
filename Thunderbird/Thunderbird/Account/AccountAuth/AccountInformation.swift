@@ -20,6 +20,7 @@ struct AccountInformation: View {
     @State private var config: ClientConfig?
     @State private var password: String = ""
     @State private var error: Error?
+    @State private var failure: Failure?
     @State private var loginServer: Server = Server(.imap)
     @State private var loginAuth: Authorization = .none
     @State private var loginAuthConfig: OAuth2.Configuration?
@@ -76,9 +77,10 @@ struct AccountInformation: View {
                         account.authConfig = loginAuthConfig
                         account.servers = [incomingServerInfo, outgoingServerInfo]
 
-                        accountManager.set(account)
-                        if let error = accountManager.error {
-                            self.error = error
+                        do {
+                            try accountManager.set(account)
+                        } catch {
+                            failure = Failure(error, title: "Couldn't save the account")
                         }
                     }
                 }
@@ -112,5 +114,6 @@ struct AccountInformation: View {
         .navigationBarTitleDisplayMode(NavigationBarItem.TitleDisplayMode.inline)
         #endif
         .navigationTitle("account_server_information_title")
+        .errorAlert($failure)
     }
 }

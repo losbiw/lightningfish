@@ -33,9 +33,9 @@ struct ContentView: View {
 }
 
 #Preview("Content View") {
-    @Previewable @State var store = LocalStore()
+    @Previewable @State var store = try! LocalStore()
     @Previewable @State var accountManager = AccountManager(store: store)
-    @Previewable @State var session = SessionManager(store: store, accountManager: accountManager)
+    @Previewable @State var session = try! SessionManager(store: store, accountManager: accountManager)
 
     ContentView()
         .environment(session)

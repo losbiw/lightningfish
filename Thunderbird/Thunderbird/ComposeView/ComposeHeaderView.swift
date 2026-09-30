@@ -167,7 +167,8 @@ struct EmailPill: View {
 }
 
 #Preview {
-    @Previewable @State var accountManager: AccountManager = AccountManager()
+    @Previewable @State var store = try! LocalStore()
+    @Previewable @State var accountManager: AccountManager = AccountManager(store: store)
 
     ComposeHeaderView()
         .environment(accountManager)

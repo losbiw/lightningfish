@@ -15,7 +15,7 @@ struct App: SwiftUI.App {
 
     init() {
         let store = try! LocalStore()
-        let accountManager = try! AccountManager(store: store)
+        let accountManager = AccountManager(store: store)
         session = try! SessionManager(store: store, accountManager: accountManager)
 
         self.store = store

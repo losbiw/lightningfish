@@ -148,9 +148,8 @@ struct ManualServerSetup: View {
                         ]
                     }
 
-                    do {
-                        try accountManager.set(account)
-                    } catch {
+                    accountManager.set(account)
+                    if let error = accountManager.error {
                         self.error = error
                     }
                 }) {
@@ -172,7 +171,7 @@ struct ManualServerSetup: View {
 }
 
 #Preview("Manual Server Account Setup") {
-    @Previewable @State var store = LocalStore()
+    @Previewable @State var store = try! LocalStore()
     @Previewable @State var accountManager: AccountManager = AccountManager(store: store)
     @Previewable @State var loginDetails: LoginDetails = LoginDetails()
 

@@ -45,7 +45,7 @@ public final class SessionManager {
     public func deleteCurrentAccount() throws {
         guard selectedAccount != nil else { return }
 
-        try accountManager.delete(selectedAccount!)
+        accountManager.delete(selectedAccount!)
         // TODO: delete messages from the local DB here
     }
 

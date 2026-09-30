@@ -7,10 +7,11 @@ import Testing
 import Foundation
 @MainActor
 struct AccountManagerTests {
-    @Test func set() {
+    @Test func set() throws {
         lock.lock()
         defer { lock.unlock() }
-        let accounts: AccountManager = AccountManager()
+        let store: LocalStore = try LocalStore()
+        let accounts: AccountManager = AccountManager(store: store)
         accounts.deleteAccounts()
         #expect(accounts.error == nil)
         let allAccounts: [Account] = [
@@ -40,10 +41,11 @@ struct AccountManagerTests {
         accounts.deleteAccounts()
     }
 
-    @Test func delete() {
+    @Test func delete() throws {
         lock.lock()
         defer { lock.unlock() }
-        let accounts: AccountManager = AccountManager()
+        let store: LocalStore = try LocalStore(dbPath: ":memory:")
+        let accounts: AccountManager = AccountManager(store: store)
         accounts.deleteAccounts()
         #expect(accounts.error == nil)
         let allAccounts: [Account] = [

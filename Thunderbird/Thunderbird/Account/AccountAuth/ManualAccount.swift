@@ -52,7 +52,7 @@ struct ManualAccount: View {
 
 #Preview("Manual Account Setup") {
     @Previewable @State var getStarted: Bool = false
-    @Previewable @State var store = LocalStore()
+    @Previewable @State var store = try! LocalStore()
     @Previewable @State var accountManager = AccountManager(store: store)
 
     ManualAccount()

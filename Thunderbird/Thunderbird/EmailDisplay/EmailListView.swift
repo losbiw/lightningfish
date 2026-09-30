@@ -256,7 +256,7 @@ public enum SortStrategy {
 
 #Preview("Email List") {
     @Previewable @State var flags: FeatureFlags = FeatureFlags(distribution: .current)
-    @Previewable @State var store = LocalStore()
+    @Previewable @State var store = try! LocalStore()
     @Previewable @State var accountManager = AccountManager(store: store)
 
     EmailListView()

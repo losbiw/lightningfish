@@ -55,7 +55,8 @@ struct AccountsView: View {
 }
 
 #Preview("Accounts View") {
-    @Previewable @State var accountManager: AccountManager = AccountManager()
+    @Previewable @State var store = try! LocalStore()
+    @Previewable @State var accountManager: AccountManager = AccountManager(store: store)
 
     NavigationStack {
         AccountsView()

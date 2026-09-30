@@ -76,9 +76,8 @@ struct AccountInformation: View {
                         account.authConfig = loginAuthConfig
                         account.servers = [incomingServerInfo, outgoingServerInfo]
 
-                        do {
-                            try accountManager.set(account)
-                        } catch {
+                        accountManager.set(account)
+                        if let error = accountManager.error {
                             self.error = error
                         }
                     }

@@ -42,13 +42,14 @@ public final class AccountManager {
         }
 
         try store.saveAccounts(accounts)
-        allAccounts = try store.loadAccounts()
+        // Keep the order we just computed: the store returns rows in its own (insertion) order.
+        allAccounts = accounts
     }
 
     public func delete(_ account: Account) throws {
         account.deleteAuthorization()
         try store.deleteAccount(account.id)
-        allAccounts = try store.loadAccounts()
+        allAccounts.removeAll { $0.id == account.id }
     }
 
     public func deleteAccounts() throws {

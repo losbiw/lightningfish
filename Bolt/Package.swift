@@ -2,6 +2,12 @@
 
 import PackageDescription
 
+let approachableConcurrency: [SwiftSetting] = [
+    .defaultIsolation(MainActor.self),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("InferIsolatedConformances")
+]
+
 let package: Package = Package(
     name: "Bolt",
     platforms: [
@@ -29,15 +35,18 @@ let package: Package = Package(
             name: "Bolt",
             dependencies: [
                 "BoltUI"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "BoltUI",
             dependencies: [
                 .product(name: "BoltDesignSystem", package: "bolt-design-system")
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "BoltUITests",
             dependencies: [
                 "BoltUI"
-            ])
+            ],
+            swiftSettings: approachableConcurrency)
     ])

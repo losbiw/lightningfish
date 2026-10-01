@@ -6,7 +6,6 @@ import Foundation
 import AuthenticationServices
 
 /// Globally manage shared, persistent accounts from the SwiftUI environment.
-@MainActor
 @Observable
 public final class AccountManager {
     public private(set) var allAccounts: [Account] = []

@@ -12,12 +12,11 @@ import Foundation
 
 @Observable
 public final class SessionManager {
-    private var store: LocalStore
-    private var accountManager: AccountManager
-    private var preferences: UserPreferencesManager
+    public let accountManager: AccountManager
+    private let store: LocalStore
+    private let preferences: UserPreferencesManager
     private var mailboxManager: MailboxManager?
 
-    @MainActor
     public var selectedAccount: Account? {
         guard let selectedAccountId = preferences.selectedAccountId else {
             return nil
@@ -43,15 +42,13 @@ public final class SessionManager {
         }
     }
 
-    @MainActor
     public init(store: LocalStore, accountManager: AccountManager) {
         self.accountManager = accountManager
         self.store = store
-        preferences = UserPreferencesManager(store: store, accounts: accountManager.allAccounts)
+        self.preferences = UserPreferencesManager(store: store, accounts: accountManager.allAccounts)
     }
 
     /// Loads persisted session state; call once when the app starts.
-    @MainActor
     public func load() throws {
         try preferences.load()
         
@@ -59,15 +56,14 @@ public final class SessionManager {
             return
         }
         
-        mailboxManager = MailboxManager(account: selectedAccount, store: store)
+        self.mailboxManager = MailboxManager(account: selectedAccount, store: store)
     }
 
-    @MainActor
     public func deleteCurrentAccount() throws {
         guard let selectedAccount else { return }
 
         try accountManager.delete(selectedAccount)
-        mailboxManager = nil  // the deleted account's mailboxes went with it
+        self.mailboxManager = nil  // the deleted account's mailboxes went with it
         // TODO: delete messages from the local DB here
     }
 
@@ -77,6 +73,10 @@ public final class SessionManager {
         }
 
         return try await mailboxManager.emails(in: selectedMailbox, cursor: cursor)
+    }
+    
+    public func markAsRead(_ emails: some Sequence<String>) {
+        
     }
 }
 

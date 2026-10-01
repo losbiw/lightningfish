@@ -2,6 +2,14 @@
 
 import PackageDescription
 
+/// A function keeps the semantics of the module that declares it, so this has to be applied to
+/// every target, tests included. Enabling it for some targets only would leave the package with
+/// two rule sets and diagnostics that depend on which side of a module boundary a call sits.
+let approachableConcurrency: [SwiftSetting] = [
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("InferIsolatedConformances")
+]
+
 let package: Package = Package(
     name: "Core",
     platforms: [
@@ -77,7 +85,8 @@ let package: Package = Package(
                 "MIME",
                 "SMTP",
                 .product(name: "GRDB", package: "GRDB.swift")
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "AccountTests",
             dependencies: [
@@ -85,34 +94,42 @@ let package: Package = Package(
             ],
             resources: [
                 .process("Resources")
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "Autoconfiguration",
             dependencies: [
                 .product(name: "AsyncDNSResolver", package: "swift-async-dns-resolver")
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .executableTarget(
             name: "AutoconfigurationCLI",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 "Autoconfiguration"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "AutoconfigurationTests",
             dependencies: [
                 "Autoconfiguration"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "Core",
             dependencies: [
                 "Account"
-            ]),
-        .target(name: "EmailAddress"),
+            ],
+            swiftSettings: approachableConcurrency),
+        .target(
+            name: "EmailAddress",
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "EmailAddressTests",
             dependencies: [
                 "EmailAddress"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "IMAP",
             dependencies: [
@@ -120,24 +137,30 @@ let package: Package = Package(
                 .product(name: "NIOSSL", package: "swift-nio-ssl"),
                 "EmailAddress",
                 "MIME"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "IMAPTests",
             dependencies: [
                 "IMAP"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "JMAP",
             dependencies: [
                 "EmailAddress",
                 "MIME"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "JMAPTests",
             dependencies: [
                 "JMAP"
-            ]),
-        .target(name: "MIME"),
+            ],
+            swiftSettings: approachableConcurrency),
+        .target(
+            name: "MIME",
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "MIMETests",
             dependencies: [
@@ -145,7 +168,8 @@ let package: Package = Package(
             ],
             resources: [
                 .process("Resources")
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .target(
             name: "SMTP",
             dependencies: [
@@ -155,10 +179,12 @@ let package: Package = Package(
                 .product(name: "NIOTransportServices", package: "swift-nio-transport-services"),
                 "EmailAddress",
                 "MIME"
-            ]),
+            ],
+            swiftSettings: approachableConcurrency),
         .testTarget(
             name: "SMTPTests",
             dependencies: [
                 "SMTP"
-            ])
+            ],
+            swiftSettings: approachableConcurrency)
     ])

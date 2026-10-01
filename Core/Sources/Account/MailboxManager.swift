@@ -70,19 +70,18 @@ public final class MailboxManager {
     public func emails(in mailbox: Mailbox, cursor: UID?) async throws -> [Email] {
         let cache: [Email] = try store.loadEmails(for: mailbox.name, cursor: cursor)
 
-        let serverEmails: [Email] = try await {
-            switch self.account.emailProtocol {
-            case .imap:
-                let client: IMAPClient = try await self.account.imapClient
-                try await client.select(mailbox: IMAP.Mailbox.Name(mailbox.name))
-                let messages: MessageSet = try await client.fetch()
-                return messages.keys.sorted().reversed().map { Email(messages[$0]!) }
-            case .jmap:
-                let client: JMAPClient = try await self.account.jmapClient
-                let emails: [JMAP.Email] = try await client.emails(in: JMAP.Mailbox(name: mailbox.name, id: mailbox.id))
-                return emails.map { Email($0) }
-            }
-        }()
+        let serverEmails: [Email]
+        switch account.emailProtocol {
+        case .imap:
+            let client: IMAPClient = try await account.imapClient
+            try await client.select(mailbox: IMAP.Mailbox.Name(mailbox.name))
+            let messages: MessageSet = try await client.fetch()
+            serverEmails = messages.keys.sorted().reversed().map { Email(messages[$0]!) }
+        case .jmap:
+            let client: JMAPClient = try await account.jmapClient
+            let emails: [JMAP.Email] = try await client.emails(in: JMAP.Mailbox(name: mailbox.name, id: mailbox.id))
+            serverEmails = emails.map { Email($0) }
+        }
 
         let mergedEmails = mergeEmails(cache, serverEmails)
 

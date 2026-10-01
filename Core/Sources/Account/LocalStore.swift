@@ -19,7 +19,7 @@ public struct LocalStore {
     public init() throws {
         let defaultDBURL = try FileManager.default
             .url(for: .applicationDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            .appendingPathComponent("rainfrog.sqlite")
+            .appendingPathComponent("lightningfish.sqlite")
             .path
 
         try self.init(dbPath: defaultDBURL)

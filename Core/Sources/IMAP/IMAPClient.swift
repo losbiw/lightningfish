@@ -218,7 +218,7 @@ public class IMAPClient {
 
     public init(
         _ server: Server,
-        logger: Logger? = Logger(subsystem: "net.rainfrog", category: "IMAP")
+        logger: Logger? = Logger(subsystem: "net.lightningfish", category: "IMAP")
     ) {
         group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
         self.server = server

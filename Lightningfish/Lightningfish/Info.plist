@@ -8,11 +8,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>net.rainfrog.ios</string>
+			<string>net.lightningfish.ios</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>net.rainfrog.ios</string>
-				<string>msauth.net.rainfrog.ios</string>
+				<string>net.lightningfish.ios</string>
+				<string>msauth.net.lightningfish.ios</string>
 			</array>
 		</dict>
 	</array>

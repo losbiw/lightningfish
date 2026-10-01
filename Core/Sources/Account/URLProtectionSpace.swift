@@ -6,8 +6,8 @@ import Foundation
 
 extension URLProtectionSpace {
 
-    // Named secure realm for Rainfrog app-owned accounts on the keychain
-    static let account: URLProtectionSpace = URLProtectionSpace(host: "rainfrog.net")
+    // Named secure realm for lightningfish app-owned accounts on the keychain
+    static let account: URLProtectionSpace = URLProtectionSpace(host: "lightningfish.net")
 
     convenience init(host: String) {
         self.init(host: host, port: 0, protocol: "https", realm: nil, authenticationMethod: nil)

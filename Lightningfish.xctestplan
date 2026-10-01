@@ -14,7 +14,7 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:rainfrog.xcodeproj",
+        "containerPath" : "container:lightningfish.xcodeproj",
         "identifier" : "1521D8232D9C4D6300C4DFDF",
         "name" : "LightningfishTests"
       }

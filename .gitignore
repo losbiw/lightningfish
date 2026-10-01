@@ -5,6 +5,10 @@ Package.resolved
 .swiftpm
 .build/
 
+# vscode
+buildServer.json
+.vscode
+
 # Ruby/Bundler
 fastlane/.bundle/
 fastlane/vendor/

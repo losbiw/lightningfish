@@ -33,7 +33,8 @@ extension UnifiedFlag {
         }
     }
 
-    public var imapFlag: Flag {
+    /// `nil` for keywords that are not valid IMAP flags, so they are left out of ``Set/imapFlags``.
+    public var imapFlag: Flag? {
         switch self {
         case .seen: .seen
         case .answered: .answered
@@ -79,7 +80,7 @@ extension Set<UnifiedFlag> {
         self = Set(flags.map(UnifiedFlag.init(imap:)))
     }
 
-    public var imapFlags: [Flag] { map(\.imapFlag) }
+    public var imapFlags: [Flag] { compactMap(\.imapFlag) }
 
     /// Converts the keywords of a JMAP message.
     public init(jmapKeywords: [String: Bool]) {

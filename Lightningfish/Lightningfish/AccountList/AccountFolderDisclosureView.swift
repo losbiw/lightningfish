@@ -27,7 +27,7 @@ struct AccountFolderDisclosureView: View {
                         .font(.body)
                         .truncationMode(.middle)
                     if (!folderManager.account.name.isEmailAddress) {
-                        Text(folderManager.account.identities[0].email)
+                        Text(folderManager.account.identities[0].value)
                             .font(.caption2)
                             .truncationMode(.middle)
                     }

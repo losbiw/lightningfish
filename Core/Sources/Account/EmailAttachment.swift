@@ -5,7 +5,7 @@
 import Foundation
 import MIME
 
-public struct EmailAttachment: Codable, Sendable {
+public struct EmailAttachment: Codable, Sendable, Hashable {
     public typealias ContentDisposition = MIME.ContentDisposition
     public typealias ContentID = MIME.ContentID
 

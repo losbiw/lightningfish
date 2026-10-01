@@ -6,7 +6,7 @@ import Account
 import SwiftUI
 
 struct DrawerView: View {
-    @Environment(SessionManager.self) private var session: SessionManager
+    @Environment(AccountManager.self) private var accountManager: AccountManager
     @Binding var showDrawer: Bool
 
     // MARK: View
@@ -27,6 +27,7 @@ struct DrawerView: View {
                     VStack(alignment: .leading) {
                         ScrollView {
                             DrawerContent(showDrawer: $showDrawer)
+                                .environment(accountManager)
                         }.toolbar {
                             ToolbarItem(id: "settings", placement: .bottom) {
                                 NavigationLink(destination: GeneralSettingsView()) {
@@ -52,17 +53,17 @@ struct DrawerView: View {
 }
 
 #Preview("Account Drawer") {
-    @Previewable @State var store = try! LocalStore()
-    @Previewable @State var accountManager = AccountManager(store: store)
-    @Previewable @State var session = SessionManager(store: store, accountManager: accountManager)
     @Previewable @State var showDrawer: Bool = true
+    let store = try! LocalStore()
+    let accountManager = AccountManager(store: store)
+    let session = SessionManager(store: store, accountManager: accountManager)
 
     DrawerView(showDrawer: $showDrawer)
         .environment(session)
 }
 
 struct DrawerContent: View {
-    @Environment(SessionManager.self) private var session: SessionManager
+    @Environment(AccountManager.self) private var accountManager: AccountManager
     @Binding var showDrawer: Bool
 
     var body: some View {

@@ -29,7 +29,7 @@ struct EmailCellView: View {
 
         // TODO: check flags
         self.unread = email.unread
-        self.hasAttachment = email.attachments != nil
+        self.hasAttachment = email.body?.attachments != nil
         self.pinned = email.pinned
     }
 
@@ -109,15 +109,16 @@ struct EmailCellView: View {
 #Preview("Email Cell") {
     @Previewable @State var flags: FeatureFlags = FeatureFlags(distribution: .current)
 
-    let tempEmail = TempEmail(
-        from: [EmailAddress("sender1@test.com", label: "Sender1")],
-        sender: [EmailAddress("sender1@test.com", label: "Sender1")],
-        reply: [EmailAddress("sender1@test.com", label: "Sender1")],
-        to: [EmailAddress("rheaThun@thundermail.com", label: "Rhea Thunderbird")],
-        cc: [],
+    let tempEmail = Email(
+        from: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        sender: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        replyTo: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        to: [MailAddress.address(EmailAddress("rheaThun@thundermail.com", label: "Rhea Thunderbird"))],
         bcc: [],
-        headerText: "This is the subject line of the email",
-        bodyText: """
+        cc: [],
+        sent: Date(),
+        subject: "This is the subject line of the email",
+        body: EmailBody(html: """
             <!DOCTYPE html>
             <html style=3D"width: 100%;
             =09=09=09background-color: #fff;">
@@ -356,13 +357,7 @@ struct EmailCellView: View {
             mDBW50_itmnHCI" width=3D"1" height=3D"1" border=3D"0" alt=3D"" /></body>
 
             </html>
-            """,
-        dateSent: Date(),
-        unread: false,
-        newEmail: false,
-        attachments: [Data(), Data()],
-        isThread: false,
-        pinned: true
+            """)
     )
 
     EmailCellView(email: tempEmail).environment(flags)

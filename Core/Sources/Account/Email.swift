@@ -103,6 +103,7 @@ extension Email {
 // UI-related properties
 extension Email {
     public var unread: Bool { !flags.contains(.seen) }
+    public var pinned: Bool { flags.contains(.flagged) }
 }
 
 extension Email {

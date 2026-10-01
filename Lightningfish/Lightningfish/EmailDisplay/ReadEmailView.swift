@@ -9,17 +9,34 @@ import Account
 
 struct ReadEmailView: View {
     @Environment(MailboxManager.self) private var mailboxManager: MailboxManager
+    @Environment(SessionManager.self) private var session: SessionManager
+    @State private var failure: Failure?
+    @State private var email: Email
 
     init(_ email: Email) {
-        guard self.email.body == nil else {
-            self.email = email
-        }
-
-        let emailWithBody = mailboxManager.getBody(for: self.email.uid)
-        self.email = emailWithBody
+        self.email = email
     }
 
-    private var email: Email
+    /// The list only fetches envelope metadata, so load the body when the message is opened.
+    private func loadBody() async {
+        guard email.body == nil else {
+            return
+        }
+
+        guard let uid = email.uid, let mailbox = session.selectedMailbox else {
+            failure = Failure(AccountError.session(.noMailboxExists), title: "Mailbox not selected")
+            return
+        }
+
+        do {
+            if let emailWithBody = try await mailboxManager.emailWithBody(for: uid, in: mailbox) {
+                email = emailWithBody
+            }
+        } catch {
+            failure = Failure(error, title: "Couldn't load the message")
+        }
+    }
+
 
     var body: some View {
         NavigationView {
@@ -38,10 +55,13 @@ struct ReadEmailView: View {
                     VStack(alignment: .leading) {
                         SenderView(email: email)
 
-                        EmailBodyView(html: email.bodyText, editable: false)
+                        if let html = email.body?.html() {
+                            // FIXME: only works with html for now
+                            EmailBodyView(html: html, editable: false)
+                        }
 
-                        if email.attachments != nil {
-                            AttachmentBlockView(email.attachments)
+                        if let attachments = email.body?.attachments {
+                            AttachmentBlockView(attachments)
                         }
                     }
                 }
@@ -115,7 +135,7 @@ struct ReadEmailView: View {
                     }
                     ToolbarItem(placement: .bottom) {
                         NavigationLink {
-                            ComposeView(email: email.asEmail().asReply(all: false))
+                            ComposeView(email: email.asReply(all: false))
                         } label: {
                             Image(systemName: "arrowshape.turn.up.left")
                                 .foregroundStyle(.foreground)
@@ -123,7 +143,7 @@ struct ReadEmailView: View {
                     }
                     ToolbarItem(placement: .bottom) {
                         NavigationLink {
-                            ComposeView(email: email.asEmail().asReply(all: true))
+                            ComposeView(email: email.asReply(all: true))
                         } label: {
                             Image(systemName: "arrowshape.turn.up.left.2")
                                 .foregroundStyle(.foreground)
@@ -140,7 +160,7 @@ struct ReadEmailView: View {
                     }
                     ToolbarItem(placement: .bottom) {
                         NavigationLink {
-                            ComposeView(email: email.asEmail())
+                            ComposeView(email: email)
                         } label: {
                             Image(systemName: "arrowshape.turn.up.right")
                                 .foregroundStyle(.foreground)
@@ -156,15 +176,19 @@ struct ReadEmailView: View {
                     }
                 }
         }
+        .task {
+            await loadBody()
+        }
+        .errorAlert($failure)
     }
 }
 
 struct AttachmentBlockView: View {
-    init(_ attachments: [Data]) {
+    init(_ attachments: [EmailAttachment]) {
         self.attachments = attachments
     }
 
-    private var attachments: [Data]
+    private var attachments: [EmailAttachment]
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -232,8 +256,8 @@ struct SenderView: View {
         replyTo = email.replyTo
         recipients = email.cc
         toText = email.to
-        date = email.dateSent
-        replyTo = email.reply
+        date = email.sent ?? Date()
+        replyTo = email.replyTo
         fullEmail = email
     }
 
@@ -243,15 +267,13 @@ struct SenderView: View {
     private var recipients: [MailAddress]
     private var toText: [MailAddress]
     private var date: Date
-    private var fullEmail: TempEmail
+    private var fullEmail: Email
     @State private var showSenderRecipientInfo = false
     @State private var showEmailOptions = false
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                let fromDisplayValue = from[0].addresses[0]
-
                 HStack {
                     Text(from.first?.displayName ?? "").font(.title3)
                 }
@@ -310,7 +332,7 @@ struct SenderView: View {
 
                         })
                     NavigationLink {
-                        ComposeView(email: fullEmail.asEmail())
+                        ComposeView(email: fullEmail)
                     } label: {
                         Text("edit_as_new_button")
                     }
@@ -392,15 +414,16 @@ struct ContactCellView: View {
 }
 
 #Preview {
-    let tempEmail = TempEmail(
-        from: [EmailAddress("sender1@test.com", label: "Sender1")],
-        sender: [EmailAddress("sender1@test.com", label: "Sender1")],
-        reply: [EmailAddress("sender1@test.com", label: "Sender1")],
-        to: [EmailAddress("rheaThun@thundermail.com", label: "Rhea Thunderbird")],
-        cc: [],
+    let tempEmail = Email(
+        from: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        sender: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        replyTo: [MailAddress.address(EmailAddress("sender1@test.com", label: "Sender1"))],
+        to: [MailAddress.address(EmailAddress("rheaThun@thundermail.com", label: "Rhea Thunderbird"))],
         bcc: [],
-        headerText: "This is the subject line of the email",
-        bodyText: """
+        cc: [],
+        sent: Date(),
+        subject: "This is the subject line of the email",
+        body: EmailBody(html: """
             <!DOCTYPE html>
             <html style=3D"width: 100%;
             =09=09=09background-color: #fff;">
@@ -640,17 +663,9 @@ struct ContactCellView: View {
 
             </html>
 
-            """,
-        dateSent: Date(),
-        unread: false,
-        newEmail: false,
-        attachments: [Data(), Data()],
-        isThread: false,
-        pinned: true
+            """),
     )
-    ReadEmailView(
-        tempEmail
-    )
+    ReadEmailView(tempEmail)
 }
 
 private extension ToolbarItemPlacement {

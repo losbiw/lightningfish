@@ -5,7 +5,7 @@
 import Foundation
 
 /// [Media content types](https://www.iana.org/assignments/media-types/media-types.xhtml) with base types enumerated
-public enum ContentType: Codable, CustomStringConvertible, Equatable, RawRepresentable, Sendable {
+public enum ContentType: Codable, CustomStringConvertible, Equatable, Hashable, RawRepresentable, Sendable {
     case application(String)
     case audio(String)
     case example(String)

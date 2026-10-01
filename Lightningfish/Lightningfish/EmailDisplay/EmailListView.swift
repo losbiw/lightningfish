@@ -8,7 +8,7 @@ import SwiftUI
 struct EmailListView: View {
     @Environment(SessionManager.self) private var session: SessionManager
 
-    @State private var selections: Set<UUID> = []
+    @State private var selection: Set<String> = []
     @State private var path = NavigationPath()
     @State private var emails: [Email] = []
 
@@ -27,7 +27,7 @@ struct EmailListView: View {
 
     func selectAll() {
         for email in emails {
-            selections.insert(email.id)
+            selection.insert(email.id)
         }
     }
 
@@ -35,7 +35,7 @@ struct EmailListView: View {
     func markSelectionAsRead() {
         Task {
             do {
-                try await session.markAsRead(emails: emails)
+                session.markAsRead(selection)
                 emails = try await session.loadEmails()
             } catch {
                 failure = Failure(error, title: "Couldn't mark messages as read")
@@ -93,7 +93,7 @@ struct EmailListView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     VStack {
-                        List(emails, id: \.id, selection: $selections) { email in
+                        List(emails, id: \.id, selection: $selection) { email in
                             NavigationLink {
                                 ReadEmailView(email)
                             } label: {
@@ -147,7 +147,7 @@ struct EmailListView: View {
 
             DrawerView(showDrawer: $showDrawer)
                 .accessibilityHidden(!showDrawer)
-                .environment(session)
+                .environment(session.accountManager)
         }
         .navigationTitle("inbox_header")
         #if os(iOS)
@@ -243,8 +243,8 @@ public enum SortStrategy {
 
 #Preview("Email List") {
     @Previewable @State var flags: FeatureFlags = FeatureFlags(distribution: .current)
-    @Previewable @State var store = try! LocalStore()
-    @Previewable @State var accountManager = AccountManager(store: store)
+    let store = try! LocalStore()
+    let accountManager = AccountManager(store: store)
 
     EmailListView()
         .environment(flags)

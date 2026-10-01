@@ -7,7 +7,7 @@ import Foundation
 /// Multipart part content disposition and parameters described in [RFC 2183](https://www.rfc-editor.org/rfc/rfc2183)
 ///
 /// Instruct mail client to display decoded body part inline, in message, or link as an attachment. Optionally include metadata for source file.
-public enum ContentDisposition: Codable, CustomStringConvertible, Equatable, RawRepresentable, Sendable {
+public enum ContentDisposition: Codable, CustomStringConvertible, Equatable, Hashable, RawRepresentable, Sendable {
     public struct File: Codable, CustomStringConvertible, RawRepresentable, Sendable {
 
         /// Suggested attachment filename and extension; expressed in ASCII characters

@@ -69,8 +69,8 @@ struct AddAccountView: View {
 }
 
 #Preview("Add Account View") {
-    @Previewable @State var store = try! LocalStore()
-    @Previewable @State var accountManager: AccountManager = AccountManager(store: store)
+    let store = try! LocalStore()
+    let accountManager: AccountManager = AccountManager(store: store)
 
     AddAccountView()
         .environment(accountManager)

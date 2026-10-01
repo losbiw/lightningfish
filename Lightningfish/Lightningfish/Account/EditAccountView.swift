@@ -56,8 +56,8 @@ struct EditAccountView: View {
 }
 
 #Preview("Edit Account View") {
-    @Previewable @State var store = try! LocalStore()
-    @Previewable @State var accountManager = AccountManager(store: store)
+    let store = try! LocalStore()
+    let accountManager = AccountManager(store: store)
 
     NavigationStack {
         EditAccountView(Account("example@thunderbird.net"))

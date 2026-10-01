@@ -174,9 +174,9 @@ struct ManualServerSetup: View {
 }
 
 #Preview("Manual Server Account Setup") {
-    @Previewable @State var store = try! LocalStore()
-    @Previewable @State var accountManager: AccountManager = AccountManager(store: store)
-    @Previewable @State var loginDetails: LoginDetails = LoginDetails()
+    let store = try! LocalStore()
+    let accountManager: AccountManager = AccountManager(store: store)
+    let loginDetails: LoginDetails = LoginDetails()
 
     ManualServerSetup(loginDetails)
         .environment(accountManager)

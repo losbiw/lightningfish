@@ -56,7 +56,7 @@ extension URLSession {
     }
 
     func suffixList() async throws -> [String] {
-        let (data, urlResponse) = try await data(from: .suffixList)
+        let (data, _) = try await data(from: .suffixList)
         let suffixList: [String] = try SuffixListParser(data: data).suffixList
         return suffixList
     }
